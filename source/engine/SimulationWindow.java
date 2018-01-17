@@ -24,7 +24,7 @@ public class SimulationWindow extends JFrame implements ActionListener {
 		
 	screenBounds = Toolkit.getDefaultToolkit().getScreenSize();
 		
-		this.setTitle("Simulation");
+		this.setTitle("PlatypusPhysics");
 		//this.setSize(300, 200);		
 		content = new JPanel();
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

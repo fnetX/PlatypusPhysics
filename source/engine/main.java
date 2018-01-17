@@ -17,12 +17,12 @@ public class main{
 	public static SimulationWindow mainWindow;
 
 	public static float deltaTime;
-	public static float fixedTick = 120f;
+	public static float fixedTick = 20f;
 	public static float deltaSeconds;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws InterruptedException {
 		try {
 			coreClass = Class.forName(coreClassLocation);
 		} catch (ClassNotFoundException e) {
@@ -62,7 +62,7 @@ public class main{
 				}
 				FUCounter -= 1000000000 / fixedTick;
 			}
-			
+			Thread.sleep(50);
 			try {
 				coreClass.getMethod("Update", null).invoke(null, null);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
