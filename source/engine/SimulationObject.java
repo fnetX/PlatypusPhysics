@@ -65,8 +65,9 @@ public class SimulationObject {
 		this.scale *= fac;
 	}
 	
-	public void forward(float f){
+	public void localTranslate(float f, float g){
 		translate((float)Math.cos(Math.toRadians(rotation)) * f, (float)Math.sin(Math.toRadians(rotation)) * f);
+		translate((float)Math.cos(Math.toRadians(rotation + 90)) * g, (float)Math.sin(Math.toRadians(rotation + 90)) * g);
 	}
 
 }

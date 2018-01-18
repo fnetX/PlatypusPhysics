@@ -11,7 +11,8 @@ import engine.PrimitiveType;
 public class Program {
 
 	public static SimulationObject auto = new SimulationObject("auto.png");
-	public static float speed = 20;
+	public static float speed = 5;
+	public static float rotSpeed = 2;
 	
 	public static void Start(){
 		
@@ -22,18 +23,23 @@ public class Program {
 	}
 	
 	public static void Update(){
-		if(Input.getKey('w'))
-			auto.forward(0.001f * speed);
-		if(Input.getKey('s'))
-			auto.forward(-0.001f * speed);
-		if(Input.getKey('a'))
-			auto.rotate(-0.01f);
-		if(Input.getKey('d'))
-			auto.rotate(0.01f);
-		}
+	
+	}
 		
 	
 	public static void FixedUpdate(){
+		if(Input.getKey('w'))
+			auto.localTranslate(speed, 0);
+		if(Input.getKey('s'))
+			auto.localTranslate(-speed, 0);
+		if(Input.getKey('a'))
+			auto.rotate(-rotSpeed);
+		if(Input.getKey('d'))
+			auto.rotate(rotSpeed);		
+		if(Input.getKey('c'))
+			auto.localTranslate(0,speed);
+		if(Input.getKey('y'))
+			auto.localTranslate(0,-speed);
 	}
 	
 }
