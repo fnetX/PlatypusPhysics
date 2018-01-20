@@ -22,6 +22,8 @@ public class SimulationObject {
 	public Image sprite;
 	
 	
+	public void Update(){}
+	public void FixedUpdate(){}
 	
 	public SimulationObject(Color c, int width, int height, PrimitiveType type){
 	this.color = c;	

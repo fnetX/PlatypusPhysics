@@ -53,6 +53,9 @@ public class main{
 			
 			FUCounter += deltaTime;
 			if(FUCounter >= 1000000000 / fixedTick ){
+				for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
+					SimulationScene.activeScene.objects.get(i).FixedUpdate();
+				}
 				try {
 					coreClass.getMethod("FixedUpdate", null).invoke(null, null);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -63,6 +66,9 @@ public class main{
 				FUCounter -= 1000000000 / fixedTick;
 			}
 			
+			for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
+				SimulationScene.activeScene.objects.get(i).Update();
+			}
 			try {
 				coreClass.getMethod("Update", null).invoke(null, null);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
