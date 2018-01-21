@@ -55,12 +55,12 @@ public class main{
 		
 		while(true){
 			// Ottos Debug Section, 
-				int newtime = (int) (System.currentTimeMillis() / 1000L); // get current time
-				if (newtime > debug_lc) { // if is greater than last run
-					debug_lc = newtime; // start time of latest run is now
-					int average = (debug_ct / (newtime - debug_initt)); // average is total count / total time
+				int debug_nt = (int) (System.currentTimeMillis() / 1000L); // get current time
+				if (debug_nt > debug_lc) { // if is greater than last run
+					debug_lc = debug_nt; // start time of latest run is now
+					int average = (debug_ct / (debug_nt - debug_initt)); // average is total count / total time
 					if (debug_log) { // if debug logging enabled, print info to log
-						System.out.println(debug_exc + "ticks/s; newtime = " + newtime);
+						System.out.println(debug_exc + "ticks/s; newtime = " + debug_nt);
 						System.out.println("average: " + average + " ticks/s");
 					}
 					debug_ct += debug_exc; // add current runs to total
