@@ -17,6 +17,8 @@ public class Auto extends SimulationObject {
 	}
 	
 	
+	//Brumm brumm
+	
 	public  void FixedUpdate(){
 		if(Input.getKey('w'))
 			localTranslate(Program.speed, 0);
