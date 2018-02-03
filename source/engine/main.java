@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import scripts.Program;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 public class main{	
@@ -20,7 +19,7 @@ public class main{
 	public static SimulationWindow mainWindow;
 
 	public static float deltaTime;
-	public static float fixedTick = 120f;
+	public static float fixedTick = 50f; // lower seems better for me
 	public static float deltaSeconds;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
@@ -52,8 +51,8 @@ public class main{
 		
 		
 		if (newtimer) {
-			int delay = (int) (1000 / fixedTick); //milliseconds
-			ActionListener taskPerformer = new ActionListener() {
+			int delay = (int) (1000 / fixedTick); //milliseconds?
+			ActionListener fixedUpdate = new ActionListener() {
 			      public void actionPerformed(ActionEvent evt) {
 			    	  mainWindow.requestFocus();
 			    	  for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
@@ -66,7 +65,14 @@ public class main{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 			    	  }	
-			    	  for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
+			      }
+			  };
+			  new Timer(delay, fixedUpdate).start();
+			  
+			  
+			  ActionListener Update = new ActionListener() {
+				  public void actionPerformed(ActionEvent evt) {
+					  for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
 							SimulationScene.activeScene.objects.get(i).Update();
 			    	  }
 			    	  try {
@@ -78,9 +84,9 @@ public class main{
 			    	  }
 			    	  //System.out.println("Up and running in main at " + deltaTime);
 			    	  mainWindow.graphics.repaint();
-			      }
+				  }
 			  };
-			  new Timer(delay, taskPerformer).start();
+			  new Timer(15, Update).start(); // 15 seems to have best performance atm, tested 1,2,5,10,12,15,18,20,30,50
 			  
 		} else { // ability to enable old timer timer
 			float lateTime = System.nanoTime();
