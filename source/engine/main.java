@@ -48,7 +48,7 @@ public class main{
 		// enable new timer method
 		boolean newtimer = true;
 		
-		
+		//XD
 		
 		if (newtimer) {
 			int delay = (int) (1000 / fixedTick); //milliseconds?
