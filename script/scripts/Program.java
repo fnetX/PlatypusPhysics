@@ -31,9 +31,7 @@ public class Program {
 	
 	public static JSlider scheme;
 	
-	static ArrayList<ArrayList<Integer>> WaveLCT = new ArrayList<ArrayList<Integer>>();
-	
-	static ArrayList<ArrayList<Integer>> WaveEmitter = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> WaveLayer = new ArrayList<ArrayList<Integer>>();
 	
 	static ArrayList<Integer> array = new ArrayList<Integer>();
 	
@@ -186,7 +184,7 @@ public class Program {
 			array.add(lambda);
 			array.add(c);
 			array.add(time);
-			WaveLCT.add(array);
+			WaveLayer.add(array);
 			
 		} else {
 			array.clear();
@@ -196,7 +194,7 @@ public class Program {
 			array.add(lambda);
 			array.add(c);
 			array.add(time);
-			WaveLCT.add(array);
+			WaveLayer.add(array);
 		}
 	}
 	
