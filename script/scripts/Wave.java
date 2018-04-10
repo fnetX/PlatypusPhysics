@@ -13,9 +13,13 @@ public class Wave {
 	float lambda = 0;
  	float c = 0;
  	int timefactor = 1;
- 	List sources = new ArrayList();
- 	List walls = new ArrayList();
+ 	
+ 	void Wave(String colorspace, String name) {
+ //		this.colorspace = colorspace;
+ 	}
 	
+ 	
+ 	
 /*	public int getCircleY(int x, int time, float c){
 		float r = c * time;
 		int y = (int)Math.round(Math.sqrt(Math.pow(r, 2) - Math.pow(x, 2)));
@@ -36,19 +40,16 @@ public class Wave {
 	}
 	
 	public BufferedImage drawWaveImage(int time) {
-		BufferedImage image = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		int r;
-		int g;
-		int b;
-		
-		for(int i = 0; i < sources.size(); i++) {
+		BufferedImage image = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+					
+/*		for(int i = 0; i < sources.size(); i++) {
 			int x = (int) sources.get(i);
 			int y = (int) sources.get(i);
 			//draw circles
 			
 		//	int rgb = r * 100000000 + g * 100000000 + b * 100000000;
 			
-		}
+		}*/
 		
 		//image.setRGB(x, y, rgb);
 		
@@ -57,8 +58,10 @@ public class Wave {
 		int  blue  =  clr & 0x000000ff;
 		System.out.println("Red Color value = "+ red);
 		System.out.println("Green Color value = "+ green);
-		System.out.println("Blue Color value = "+ blue);	*/
-		
+		System.out.println("Blue Color value = "+ blue);	
+		*/
 		return image;
 	}
 }
+
+//int gray= img.getRGB(x, y)& 0xFF;
