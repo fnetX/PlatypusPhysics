@@ -21,7 +21,7 @@ public class GraphicsPanel extends JPanel {
 	AffineTransform t = new AffineTransform();
 	
 	//Clear
-	g.setColor(main.clearColor);
+	g.setColor(SimulationScene.activeScene.backgroundColor);
 	g.fillRect(0, 0, this.getWidth(),this.getHeight());
 	
 	//Draw Objects

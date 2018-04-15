@@ -17,7 +17,7 @@ public class Auto extends SimulationObject {
 	}
 	
 	
-	public  void FixedUpdate(){
+/*	public  void FixedUpdate(){
 		if(Input.getKey('w'))
 			localTranslate(Program.speed, 0);
 		if(Input.getKey('s'))
@@ -31,5 +31,5 @@ public class Auto extends SimulationObject {
 		if(Input.getKey('y'))
 			localTranslate(0,-Program.speed);
 	}
-
+*/
 }
