@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -25,6 +26,8 @@ import engine.PrimitiveType;
 
 public class Program {
 	
+	public static FrameDisplay frameDisplay = new FrameDisplay();
+
 	static float input[] = {0, 2, 0, 0, 0};
 	
 	public static Wave wave = new Wave();
@@ -39,31 +42,40 @@ public class Program {
 	static JButton Reflektor = new JButton("Reflektor");
 	static JButton Absorber = new JButton("Absorber");
 	static JButton Radierer = new JButton("Radierer");
+	static JButton C = new JButton("C");
 	
 	static JButton Freihand = new JButton("Freihand");
 	static JButton Linie = new JButton("Linie");
 	static JButton Quader = new JButton("Quader");
 	static JButton Ellipse = new JButton("Ellipse");
 	
+	static ArrayList<Integer> toolIndex = new ArrayList<Integer>();
+	
+	static ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
+	
 	static int toolState = 0;
 	static int formState = 1;
+	
+	static int frameIndex = 0;
 	
 	
 	public static void Start(){
 		SimulationScene.createScene("Wellensimulation");
 		SimulationScene.loadScene(SimulationScene.getScene("Wellensimulation"));
-
+		
+		for(int i = 0; i<5; i++) {
+			toolIndex.add(0);
+		}
+		
 		
 		//	SimulationScene.activeScene.addObject(wave, main.WIDTH, main.HEIGHT);
 		
 		//GUI
 		//s1
-		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Simulation Bearbeiten", 10);
-		
-		s1.getRow(0).add(new JLabel("WERKZEUG"));
+		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Werkzeug", 3);
 		
 		
-		s1.getRow(1).add(Erreger);
+		s1.getRow(0).add(Erreger);
 		Erreger.setEnabled(false);
 		Erreger.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -71,47 +83,63 @@ public class Program {
 				Reflektor.setEnabled(true);
 				Absorber.setEnabled(true);
 				Radierer.setEnabled(true);
+				C.setEnabled(true);
 				
 				toolState = 0;
 			}});
 		
-		s1.getRow(1).add(Reflektor);
+		s1.getRow(0).add(Reflektor);
 		Reflektor.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Erreger.setEnabled(true);
 			Reflektor.setEnabled(false);
 			Absorber.setEnabled(true);
 			Radierer.setEnabled(true);
+			C.setEnabled(true);
 			
 			toolState = 1;
 			}});
 		
-		s1.getRow(2).add(Absorber);
+		s1.getRow(1).add(Absorber);
 		Absorber.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Erreger.setEnabled(true);
 			Reflektor.setEnabled(true);
 			Absorber.setEnabled(false);
 			Radierer.setEnabled(true);
+			C.setEnabled(true);
 			
 			toolState = 2;
 			}});
 		
-		s1.getRow(2).add(Radierer);
+		s1.getRow(1).add(Radierer);
 		Radierer.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Erreger.setEnabled(true);
 			Reflektor.setEnabled(true);
 			Absorber.setEnabled(true);
 			Radierer.setEnabled(false);
+			C.setEnabled(true);
 			
 			toolState = 3;
 			}});
 		
+		s1.getRow(2).add(C);
+		Radierer.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Erreger.setEnabled(true);
+			Reflektor.setEnabled(true);
+			Absorber.setEnabled(true);
+			Radierer.setEnabled(true);
+			C.setEnabled(false);
+			
+			toolState = 4;
+			}});
 		
-		s1.getRow(4).add(new JLabel("FORM"));
 		
-		s1.getRow(5).add(Freihand);
+		SimulationSidebar s2 = SimulationWindow.addSidebarLeft("Form", 3);
+		
+		s2.getRow(0).add(Freihand);
 		Freihand.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Freihand.setEnabled(false);
@@ -122,7 +150,7 @@ public class Program {
 			formState = 0;
 			}});
 		
-		s1.getRow(5).add(Linie);
+		s2.getRow(0).add(Linie);
 		Linie.setEnabled(false);
 		Linie.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
@@ -134,7 +162,7 @@ public class Program {
 			formState = 1;
 			}});
 		
-		s1.getRow(6).add(Quader);
+		s2.getRow(1).add(Quader);
 		Quader.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Freihand.setEnabled(true);
@@ -145,7 +173,7 @@ public class Program {
 			formState = 2;
 			}});
 		
-		s1.getRow(6).add(Ellipse);
+		s2.getRow(1).add(Ellipse);
 		Ellipse.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 			Freihand.setEnabled(true);
@@ -160,7 +188,7 @@ public class Program {
 		
 		
 		//s2
-		SimulationSidebar s2 = SimulationWindow.addSidebarRight("Einstellungen", 10);
+		SimulationSidebar s3 = SimulationWindow.addSidebarRight("Darstellung", 3);
 		
 		Hashtable colorscheme = new Hashtable();
 		colorscheme.put(0,new JLabel("SW-Farbverlauf"));
@@ -169,36 +197,59 @@ public class Program {
 		scheme = new JSlider(JSlider.HORIZONTAL, 0, 9, 9);
 		scheme.setLabelTable(colorscheme);
 		scheme.setPaintLabels(true);
-		s2.getRow(0).add(new JLabel("Darstellung:"));
-		s2.getRow(1).add(scheme);
+		s3.getRow(0).add(scheme);
 		
 		
 		}
 	
-	public static void LayerAdd(int x, int y, int form, int lambda, int c, int time) {
-		if(form == 0) {
+	public static void LayerAdd(int x, int y, int tool, int lambda, int c, int time) {
+		if(tool == 0) {
 			array.clear();
 			array.add(x);
 			array.add(y);
-			array.add(form);
+			array.add(tool);
 			array.add(lambda);
-			array.add(c);
 			array.add(time);
-			WaveLayer.add(array);
+			WaveLayer.add(toolIndex.get(tool), array);
+			
+		} else if(tool == 1 || tool == 2) {
+			array.clear();
+			array.add(x);
+			array.add(y);
+			array.add(tool);
+			
+		} else if(tool == 3) {
+			for(int i = WaveLayer.size(); i>0; i--) {
+				if(WaveLayer.get(i).get(0) == x && WaveLayer.get(i).get(1) == y) {
+					for(int t = WaveLayer.get(i).get(2); t <= 4; t++) {
+						toolIndex.set(t, (toolIndex.get(t) - 1));
+					}
+					WaveLayer.remove(i);
+				}
+			}
+			
+		} else if(tool == 4) {
+			array.clear();
+			array.add(x);
+			array.add(y);
+			array.add(tool);
+			array.add(c);
+			WaveLayer.add(toolIndex.get(tool), array);
 			
 		} else {
-			array.clear();
-			array.add(x);
-			array.add(y);
-			array.add(form);
-			array.add(lambda);
-			array.add(c);
-			array.add(time);
-			WaveLayer.add(array);
+			System.out.println("tool not defined!");
+			
 		}
+		
+		if(tool>=0 && tool<=4 && tool!=3) {
+			for(int i = tool; i <= 4; i++) {
+				toolIndex.set(i, (toolIndex.get(i) + 1));
+			}
+		}
+		
 	}
 	
-	public static void draw(int form) {
+	public static void draw(int form, int tool) {
 		int x1 = 0;
 		int x2 = 0;
 		int y1 = 0;
@@ -213,6 +264,37 @@ public class Program {
 		int c = 1;
 		int time = 0;
 		float m = 0;
+		
+		
+		deltaX = x1 - x2;
+		deltaY = y1 - y2;
+
+		if(deltaX != 0) {
+			m = deltaY / deltaX;
+		} 
+		
+		if (deltaX == 0) {
+			for(int y = startY; y <= endY; y++) {
+				LayerAdd(startX, y, tool, lambda, c, time);
+				
+			}
+			
+		} else if (m <= 1 && m >= -1) {
+			for(int x = startX; x <= endX; x++) {
+				int y = Math.round(m * x);
+				LayerAdd(x, y, tool, lambda, c, time);
+				
+			}
+			
+		} else if (m > 1 || m < -1) {
+			for(int y = startY; y <= endY; y++) {
+				int x = Math.round(y / m);
+				LayerAdd(x, y, tool, lambda, c, time);
+				
+			}
+		
+		}	
+		
 		
 		switch(form) {
 		case 0: //free
@@ -290,27 +372,28 @@ public class Program {
 			
 			if (deltaX == 0) {
 				for(int y = startY; y <= endY; y++) {
-					LayerAdd(startX, y, form, lambda, c, time);
+					LayerAdd(startX, y, tool, lambda, c, time);
 					
 				}
 			
 			} else if (deltaY == 0) {
 				for(int x = startX; x <= endX; x++) {
-					LayerAdd(x, startY, form, lambda, c, time);
+					LayerAdd(x, startY, tool, lambda, c, time);
 					
 				}
 				
 			} else if (m <= 1 && m >= -1) {
 				for(int x = startX; x <= endX; x++) {
 					int y = Math.round(m * x);
-					LayerAdd(x, y, form, lambda, c, time);
+					LayerAdd(x, y, tool, lambda, c, time);
+					
 					
 				}
 				
 			} else if (m > 1 || m < -1) {
 				for(int y = startY; y <= endY; y++) {
 					int x = Math.round(y / m);
-					LayerAdd(x, y, form, lambda, c, time);
+					LayerAdd(x, y, tool, lambda, c, time);
 					
 				}
 			
@@ -326,39 +409,69 @@ public class Program {
 			
 		}
 		
-		deltaX = x1 - x2;
-		deltaY = y1 - y2;
-
-		if(deltaX != 0) {
-			m = deltaY / deltaX;
-		} 
 		
-		if (deltaX == 0) {
-			for(int y = startY; y <= endY; y++) {
-				LayerAdd(startX, y, form, lambda, c, time);
+	}
+	
+	public static void calcFrame(ArrayList<ArrayList<Integer>> Layer1, ArrayList<ArrayList<Integer>> Layer2) {
+		BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
+		
+		int l1size = Layer1.size();
+		int l2size = Layer2.size();
+		
+		int Color = 0;;
+		int C0 = new Color(150, 255, 50).getRGB(); 	//Erreger
+		int C1 = new Color(0, 0, 255).getRGB(); 	//Reflektor
+		int C2 = new Color(255, 0, 0).getRGB(); 	//Absorber
+		
+		for(int i = 0; i < l1size; i++) {
+			if(Layer1.get(i).get(2) == 0) {
+				Color = C0;
+				
+			} else if(Layer1.get(i).get(2) == 1) {
+				Color = C1;
+				
+			} else if(Layer1.get(i).get(2) == 2) {
+				Color = C2;
+				
+			} else if(Layer1.get(i).get(2) == 4) {
+				int Intensity = Layer1.get(i).get(3);
+				int r = 255 - Intensity;
+				int g = 255 + 50 - Intensity;
+				int b = 255 + 100 - Intensity;
+				
+				if(r > 255) {
+					r = 255;
+				} else if(r < 0) {
+					r = 0;
+				}
+				if(g > 255) {
+					g = 255;
+				} else if(g < 0) {
+					g = 0;
+				}
+				if(b > 255) {
+					b = 255;
+				} else if(b < 0) {
+					b = 0;
+				}
+				
+				Color = new Color(r, g, b).getRGB();
 				
 			}
 			
-		} else if (m <= 1 && m >= -1) {
-			for(int x = startX; x <= endX; x++) {
-				int y = Math.round(m * x);
-				LayerAdd(x, y, form, lambda, c, time);
-				
-			}
-			
-		} else if (m > 1 || m < -1) {
-			for(int y = startY; y <= endY; y++) {
-				int x = Math.round(y / m);
-				LayerAdd(x, y, form, lambda, c, time);
-				
-			}
+			frame.setRGB(Layer1.get(i).get(0), Layer1.get(i).get(1), Color);
+		}
 		
-		}		
-}
+		for(int i = 0; i < l2size; i++) {
+			frame.setRGB(Layer2.get(i).get(0), Layer2.get(i).get(1), Layer2.get(i).get(2));
+		}
 
+		frames.add(frame);
+	}
+	
 
 	public static void Update() {
-		draw(formState);
+		draw(formState, toolState);
 		
 		
 	}
