@@ -49,6 +49,8 @@ public class Program {
 	static JButton Quader = new JButton("Quader");
 	static JButton Ellipse = new JButton("Ellipse");
 	
+	static JButton Start = new JButton("Start");
+	
 	static ArrayList<Integer> toolIndex = new ArrayList<Integer>();
 	
 	static ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
@@ -198,6 +200,12 @@ public class Program {
 		scheme.setLabelTable(colorscheme);
 		scheme.setPaintLabels(true);
 		s3.getRow(0).add(scheme);
+		
+		s3.getRow(1).add(Start);
+		Start.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Start.setLabel("Stop");
+			}});
 		
 		
 		}

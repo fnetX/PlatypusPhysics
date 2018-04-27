@@ -17,7 +17,7 @@ public class main{
 	
 	public static SimulationWindow mainWindow;
 
-	public static float fixedTick = 120f;
+	public static float fixedTick = 100f;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
 	
