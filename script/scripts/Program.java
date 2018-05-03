@@ -26,7 +26,7 @@ import engine.PrimitiveType;
 
 public class Program {
 	
-	public static FrameDisplay frameDisplay = new FrameDisplay();
+	public static FrameDisplay frameDisplay = new FrameDisplay(Color.WHITE, main.WIDTH, main.HEIGHT, PrimitiveType.Image);
 
 	static float input[] = {0, 2, 0, 0, 0};
 	
@@ -34,7 +34,7 @@ public class Program {
 	
 	public static JSlider scheme;
 	
-	static ArrayList<ArrayList<Integer>> WaveLayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> ERALayer = new ArrayList<ArrayList<Integer>>();
 	
 	static ArrayList<Integer> array = new ArrayList<Integer>();
 	
@@ -60,10 +60,15 @@ public class Program {
 	
 	static int frameIndex = 0;
 	
+	static int fps = 0;
+	static boolean simMode = false;
+	
 	
 	public static void Start(){
 		SimulationScene.createScene("Wellensimulation");
 		SimulationScene.loadScene(SimulationScene.getScene("Wellensimulation"));
+		SimulationScene.activeScene.addObject(frameDisplay, 0, 0);
+	
 		
 		for(int i = 0; i<5; i++) {
 			toolIndex.add(0);
@@ -218,7 +223,7 @@ public class Program {
 			array.add(tool);
 			array.add(lambda);
 			array.add(time);
-			WaveLayer.add(toolIndex.get(tool), array);
+			ERALayer.add(toolIndex.get(tool), array);
 			
 		} else if(tool == 1 || tool == 2) {
 			array.clear();
@@ -227,12 +232,12 @@ public class Program {
 			array.add(tool);
 			
 		} else if(tool == 3) {
-			for(int i = WaveLayer.size(); i>0; i--) {
-				if(WaveLayer.get(i).get(0) == x && WaveLayer.get(i).get(1) == y) {
-					for(int t = WaveLayer.get(i).get(2); t <= 4; t++) {
+			for(int i = ERALayer.size(); i>0; i--) {
+				if(ERALayer.get(i).get(0) == x && ERALayer.get(i).get(1) == y) {
+					for(int t = ERALayer.get(i).get(2); t <= 4; t++) {
 						toolIndex.set(t, (toolIndex.get(t) - 1));
 					}
-					WaveLayer.remove(i);
+					ERALayer.remove(i);
 				}
 			}
 			
@@ -242,7 +247,7 @@ public class Program {
 			array.add(y);
 			array.add(tool);
 			array.add(c);
-			WaveLayer.add(toolIndex.get(tool), array);
+			ERALayer.add(toolIndex.get(tool), array);
 			
 		} else {
 			System.out.println("tool not defined!");
@@ -271,38 +276,7 @@ public class Program {
 		int lambda = 10;
 		int c = 1;
 		int time = 0;
-		float m = 0;
-		
-		
-		deltaX = x1 - x2;
-		deltaY = y1 - y2;
-
-		if(deltaX != 0) {
-			m = deltaY / deltaX;
-		} 
-		
-		if (deltaX == 0) {
-			for(int y = startY; y <= endY; y++) {
-				LayerAdd(startX, y, tool, lambda, c, time);
-				
-			}
-			
-		} else if (m <= 1 && m >= -1) {
-			for(int x = startX; x <= endX; x++) {
-				int y = Math.round(m * x);
-				LayerAdd(x, y, tool, lambda, c, time);
-				
-			}
-			
-		} else if (m > 1 || m < -1) {
-			for(int y = startY; y <= endY; y++) {
-				int x = Math.round(y / m);
-				LayerAdd(x, y, tool, lambda, c, time);
-				
-			}
-		
-		}	
-		
+		float m = 0;		
 		
 		switch(form) {
 		case 0: //free
@@ -479,9 +453,16 @@ public class Program {
 	
 
 	public static void Update() {
-		draw(formState, toolState);
-		
-		
+		if(!simMode) {
+			draw(formState, toolState);
+			calcFrame(ERALayer, null);
+			frameDisplay.initDrawMode();
+			
+		} else if(simMode) {
+			calcWaves();
+			calcFrame(ERALayer, WaveLayer);
+			frameDisplay.initSimMode();
+		}
 	}
 	
 }
