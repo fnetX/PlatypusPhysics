@@ -61,6 +61,12 @@ public class SimulationObject {
 		this.rotation = deg;		
 	}
 	
+	public void setRadius(float radius) {
+		this.radius = (int) radius;
+		this.width = this.radius * 2;
+		this.height = this.radius *2;
+	}
+	
 	public void setScale(float fac){
 		this.scale = fac;		
 	}
