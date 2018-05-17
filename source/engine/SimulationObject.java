@@ -21,6 +21,8 @@ public class SimulationObject {
 	
 	public Image sprite;
 	
+	public int radius = 1;
+	
 	
 	public void Update(){}
 	public void FixedUpdate(){}
@@ -42,6 +44,14 @@ public class SimulationObject {
 		this.type = PrimitiveType.Image;
 	}
 	
+	public SimulationObject(Color c, int radius) {
+		this.radius = radius;
+		this.color = c;
+		this.width = this.radius * 2;
+		this.height = this.radius *2;
+		this.type = PrimitiveType.Radius;
+	}
+	
 	public void setPosition(float x, float y){
 		this.x = x;
 		this.y = y;
@@ -49,6 +59,12 @@ public class SimulationObject {
 	
 	public void setRotation(float deg){
 		this.rotation = deg;		
+	}
+	
+	public void setRadius(float radius) {
+		this.radius = (int) radius;
+		this.width = this.radius * 2;
+		this.height = this.radius *2;
 	}
 	
 	public void setScale(float fac){
