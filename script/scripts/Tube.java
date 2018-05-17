@@ -17,12 +17,11 @@ public class Tube extends SimulationObject {
 		super(c, radius);
 	}
 
-	public Tube(String spriteUrl) {
-		super(spriteUrl);
-	}
+
 	
-	
-	public  void FixedUpdate(){
+	public void FixedUpdate(){
+		
+		/*
 		if(Input.getKey('w'))
 			localTranslate(Program.speed, 0);
 		if(Input.getKey('s'))
@@ -35,6 +34,7 @@ public class Tube extends SimulationObject {
 			localTranslate(0,Program.speed);
 		if(Input.getKey('y'))
 			localTranslate(0,-Program.speed);
+		*/
 	}
 
 }

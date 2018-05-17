@@ -2,6 +2,7 @@ package scripts;
 
 import java.awt.Color;
 import java.util.Hashtable;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,61 +19,54 @@ import engine.PrimitiveType;
 
 public class Program {
 
-	public static float speed = 5;
-	public static float rotSpeed = 2;
+	public static int radius = 30;
 	
-	public static JSlider fahr;
-	public static JSlider dreh;
+	public static JSlider ub;
 	
-	public static SimulationObject tube = new Tube(Color.GREEN,  30);
+	public static SimulationObject center = new SimulationObject(Color.GREEN, 50, 50, PrimitiveType.Oval);
+	public static SimulationObject backgr = new SimulationObject(Color.GREEN,100, 100, PrimitiveType.Oval);
+	public static SimulationObject inner = new Tube(Color.GREEN, radius);
+	public static SimulationObject outer = new Tube(Color.GREEN, radius + 10);
 	
 	public static void Start(){
 		//tube.setScale(0.1f);
-		//tube.setRotation(270);
 		
 		SimulationScene.createScene("Elektronenbeugungsröhre");
 		SimulationScene.loadScene(SimulationScene.getScene("Elektronenbeugungsröhre"));
-		SimulationScene.activeScene.addObject(tube, main.WIDTH / 2, main.HEIGHT / 2);
 		
-		//SimulationScene.activeScene.addObject(kreis, main.WIDTH / 2, main.HEIGHT / 2);
+		SimulationScene.activeScene.addObject(center, main.WIDTH / 2, main.HEIGHT / 2);
+		SimulationScene.activeScene.addObject(inner, main.WIDTH / 2, main.HEIGHT / 2);
+		SimulationScene.activeScene.addObject(outer, main.WIDTH / 2, main.HEIGHT / 2);
 		
 		//GUI
-		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Geschwindigkeit ändern", 2);
-		SimulationSidebar s2 = SimulationWindow.addSidebarRight("Wusstest du?", 2);
+		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Simulation manipulieren", 3);
+		SimulationSidebar s2 = SimulationWindow.addSidebarRight("Menü", 2);
 		
 		//S1
-		Hashtable labels = new Hashtable();
-		labels.put(1,new JLabel("1"));
-		labels.put(5,new JLabel("5"));
-		labels.put(10,new JLabel("10"));
+		Hashtable<Integer, JLabel> labels = new Hashtable<Integer, JLabel>();
+		labels.put(5000,new JLabel("5000"));
+		labels.put(10000,new JLabel("10000"));
+		labels.put(7500,new JLabel("7500"));
 		
-		fahr = new JSlider(JSlider.HORIZONTAL, 1, 10, 5);
-		dreh = new JSlider(JSlider.HORIZONTAL, 1, 10, 2);
-		fahr.setLabelTable(labels);
-		fahr.setPaintLabels(true);
-		dreh.setLabelTable(labels);
-		dreh.setPaintLabels(true);
+		ub = new JSlider(JSlider.HORIZONTAL, 5000, 10000, 7500);
+		ub.setLabelTable(labels);
+		ub.setPaintLabels(true);
 		
-		s1.getRow(0).add(new JLabel("Fahr:"));
-		s1.getRow(0).add(fahr);
-		s1.getRow(1).add(new JLabel("Dreh:"));
-		s1.getRow(1).add(dreh);
+		s1.getRow(0).add(new JLabel("UB:"));
+		s1.getRow(1).add(ub);
+		s1.getRow(2).add(new JLabel("Raster in mm-Einteilung"));
 		
 		//S2
-		s2.getRow(0).add(new JLabel("Das Schnabeltier ist das einzige"));
-		s2.getRow(1).add(new JLabel("Säugetier, das Eier legt!"));
+		s2.getRow(0).add(new JLabel("Hier könnten weitere "));
+		s2.getRow(1).add(new JLabel("Optionen erscheinen"));
 	}
 	
 	public static void Update(){
-		speed = fahr.getValue();
-		rotSpeed = dreh.getValue();	
+		inner.setRadius(850000 / ub.getValue());
+		outer.setRadius(1250000 / ub.getValue());
 	}
-	
 	
 	public static void FixedUpdate(){
-		if(Input.getMouseButton(MouseButton.LEFT)){
-			tube.setPosition(Input.getMousePosition().x, Input.getMousePosition().y);
-		}
+		
 	}
-	
 }
