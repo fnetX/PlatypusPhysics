@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 
 import javax.swing.JPanel;
 
@@ -49,6 +50,11 @@ public class GraphicsPanel extends JPanel {
 	case Oval:
 		g.setColor(o.color);
 		g.fillOval(0, 0, o.width, o.height);
+		break;
+	case Radius:
+		g.setColor(o.color);
+		g.draw(new Ellipse2D.Double(0, 0, o.width, o.height));
+
 	}
 
 	g.setTransform(identity);	
