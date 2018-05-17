@@ -6,13 +6,18 @@ import engine.Input;
 import engine.PrimitiveType;
 import engine.SimulationObject;
 
-public class Auto extends SimulationObject {
+public class Tube extends SimulationObject {
 
-	public Auto(Color c, int width, int height, PrimitiveType type) {
+	
+	public Tube(Color c, int width, int height, PrimitiveType type) {
 		super(c, width, height, type);
 	}
+	
+	public Tube(Color c, int radius) {
+		super(c, radius);
+	}
 
-	public Auto(String spriteUrl) {
+	public Tube(String spriteUrl) {
 		super(spriteUrl);
 	}
 	

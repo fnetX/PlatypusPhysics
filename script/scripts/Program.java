@@ -18,27 +18,26 @@ import engine.PrimitiveType;
 
 public class Program {
 
-	public static Auto auto = new Auto("auto.png");
 	public static float speed = 5;
 	public static float rotSpeed = 2;
 	
 	public static JSlider fahr;
 	public static JSlider dreh;
 	
-	public static SimulationObject kreis = new SimulationObject(Color.BLUE, 100, 100, PrimitiveType.Oval );
+	public static SimulationObject tube = new Tube(Color.GREEN,  30);
 	
 	public static void Start(){
-		auto.setScale(0.1f);
-		auto.setRotation(270);
+		//tube.setScale(0.1f);
+		//tube.setRotation(270);
 		
-		SimulationScene.createScene("Beispielszene");
-		SimulationScene.loadScene(SimulationScene.getScene("Beispielszene"));
-		SimulationScene.activeScene.addObject(auto, 300, 300);
+		SimulationScene.createScene("Elektronenbeugungsröhre");
+		SimulationScene.loadScene(SimulationScene.getScene("Elektronenbeugungsröhre"));
+		SimulationScene.activeScene.addObject(tube, main.WIDTH / 2, main.HEIGHT / 2);
 		
-		SimulationScene.activeScene.addObject(kreis, main.WIDTH / 2, main.HEIGHT / 2);
+		//SimulationScene.activeScene.addObject(kreis, main.WIDTH / 2, main.HEIGHT / 2);
 		
 		//GUI
-		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Geschwindigkeit �ndern", 2);
+		SimulationSidebar s1 = SimulationWindow.addSidebarLeft("Geschwindigkeit ändern", 2);
 		SimulationSidebar s2 = SimulationWindow.addSidebarRight("Wusstest du?", 2);
 		
 		//S1
@@ -61,7 +60,7 @@ public class Program {
 		
 		//S2
 		s2.getRow(0).add(new JLabel("Das Schnabeltier ist das einzige"));
-		s2.getRow(1).add(new JLabel("S�ugetier, das Eier legt!"));
+		s2.getRow(1).add(new JLabel("Säugetier, das Eier legt!"));
 	}
 	
 	public static void Update(){
@@ -72,7 +71,7 @@ public class Program {
 	
 	public static void FixedUpdate(){
 		if(Input.getMouseButton(MouseButton.LEFT)){
-			kreis.setPosition(Input.getMousePosition().x, Input.getMousePosition().y);
+			tube.setPosition(Input.getMousePosition().x, Input.getMousePosition().y);
 		}
 	}
 	
