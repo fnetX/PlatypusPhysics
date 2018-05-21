@@ -11,45 +11,49 @@ import engine.PrimitiveType;
 import engine.SimulationObject;
 import engine.main;
 
-public class FrameDisplay extends SimulationObject{
-
-
-	public FrameDisplay(BufferedImage sprite) {
-		super(sprite);
+public class FrameDisplay extends SimulationObject {
+	
+	public FrameDisplay(BufferedImage frame) {
+		super(frame);
 	}
 
 	int frameIndex;
-	ArrayList<BufferedImage> frames;
-	BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
-	int fps = 0;
 	int activeFrame = 0;
-	boolean simMode = false;
-	boolean active = false;
-	int rgb = Color.BLUE.getRGB();
-	Graphics g = null;
+	int counter = 0;
 	
 	public void Start() {
 		
 	}
 	
-	public void initSimMode() {
-		frameIndex = Program.frameIndex;
-		frames = Program.frames;
-		fps = Program.fps;
-	}
-	
 	public void simMode() {
-		
+		try {
+			counter++;
+			if(Program.fps > 0) {
+				if(counter >= (main.fixedTick / Program.fps)) {
+					counter = 0;
+						
+					this.sprite = Program.frames.get(activeFrame);
+						
+					if(Program.frames.size() > activeFrame + 1) {
+						activeFrame++;
+					} else {
+						activeFrame = 0;
+					}
+				}
+			}
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Tried to display non-existent frame.");
+		}
 	}
 	
 	public void drawMode() {
 		this.sprite = Program.frame;
 	}
 	
-	public void FixedUpdate() {
-		if(simMode && active) {
-			
-		} else if(!simMode) {
+	public void fixedUpdate() {
+		if(Program.active && Program.simMode) {
+			simMode();
+		} else if(!Program.simMode) {
 			drawMode();
 		}
 	}

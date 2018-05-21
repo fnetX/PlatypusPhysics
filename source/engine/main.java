@@ -1,11 +1,7 @@
 package engine;
 
-import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import scripts.Program;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 
@@ -17,8 +13,7 @@ public class main{
 	
 	public static SimulationWindow mainWindow;
 
-	public static float fixedTick = 120f;
-	@SuppressWarnings("rawtypes")
+	public static float fixedTick = 100f;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
 	

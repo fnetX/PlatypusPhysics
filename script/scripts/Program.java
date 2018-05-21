@@ -23,6 +23,7 @@ import engine.SimulationObject;
 
 public class Program {
 	
+
 	public static BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
 	
 	public static FrameDisplay frameDisplay = new FrameDisplay(frame);
@@ -53,6 +54,8 @@ public class Program {
 	static JButton Quader = new JButton("Quader");
 	static JButton Ellipse = new JButton("Ellipse");
 	
+	static JButton Start = new JButton("Start");
+	
 	static ArrayList<Integer> toolIndex = new ArrayList<Integer>();
 	
 	static ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
@@ -61,11 +64,14 @@ public class Program {
 	static int formState = 1;
 	
 	static int frameIndex = 0;
-	
+
+
 	static int c = 1;
 	static float cmax = 0;
-	
+
 	static int fps = 0;
+	static boolean simMode = false;
+	static boolean active = false;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -216,6 +222,12 @@ public class Program {
 		scheme.setPaintLabels(true);
 		s3.getRow(0).add(scheme);
 		
+		s3.getRow(1).add(Start);
+		Start.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Start.setLabel("Stop");
+			}});
+		
 		
 		}
 	
@@ -245,23 +257,18 @@ public class Program {
 			frame.setRGB(x, y, C2);
 			
 		} else if(tool == 3) {
-			boolean cmaxrecalc = false;
 			for(int i = WaveLayer.size() - 1; i >= 0; i--) {
 				if(WaveLayer.get(i).get(0) == x && WaveLayer.get(i).get(1) == y) {
 					frame.setRGB(WaveLayer.get(i).get(0), WaveLayer.get(i).get(1), C3);
 					if(WaveLayer.get(i).get(2) == 4 && WaveLayer.get(i).get(3) >= cmax) {
-						cmaxrecalc = true;
+						recalcC();
 					}
-					WaveLayer.remove(i);
 					for(int t = WaveLayer.get(i).get(2) + 1; t <= 4; t++) {
 						if(toolIndex.get(t) - 1 >= 0) {
 							toolIndex.set(t, (toolIndex.get(t) - 1));
 						}
 					}
-					if(cmaxrecalc) {
-						cmaxrecalc = false;
-						recalcC();
-					}
+					WaveLayer.remove(i);
 				}
 			}
 			
@@ -279,18 +286,18 @@ public class Program {
 				int C4x = new Color(Math.round(255*c/cmax), 255, Math.round(255*c/cmax)).getRGB();
 				frame.setRGB(x, y, C4x);
 			}
+			WaveLayer.add(toolIndex.get(tool), array);
 			
 		} else {
 			System.out.println("tool not defined!");
 			
 		}
 		
-		if(tool>=0 && tool<=4 && tool!=3) {
-			for(int i = tool; i <= 4; i++) {
+		if(tool >= 0 && tool <= 4 && tool != 3) {
+			for(int i = tool + 1; i <= 4; i++) {
 				toolIndex.set(i, (toolIndex.get(i) + 1));
 			}
 		}
-		
 	}
 	
 	public static void recalcC() {
@@ -318,8 +325,7 @@ public class Program {
 		int deltaY = 0;
 		int lambda = 10;
 		int time = 0;
-		float m = 0;
-		
+		float m = 0;		
 		
 		switch(form) {
 		case 0: //free
@@ -494,11 +500,7 @@ public class Program {
 		frames.add(frame);
 	}
 	
-
 	public static void fixedUpdate() {
-	//	draw(formState, toolState);
-		input = Input.getDragCoords(input, false);
 		draw(formState, toolState);
 	}
-	
 }
