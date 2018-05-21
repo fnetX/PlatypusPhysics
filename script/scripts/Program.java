@@ -1,32 +1,31 @@
 package scripts;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import engine.SimulationObject;
 import engine.SimulationScene;
 import engine.SimulationSidebar;
 import engine.SimulationWindow;
 import engine.main;
 import engine.Input;
-import engine.MouseButton;
 import engine.PrimitiveType;
+import engine.SimulationObject;
 
 public class Program {
 	
-	public static FrameDisplay frameDisplay = new FrameDisplay();
+	public static BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
+	
+	public static FrameDisplay frameDisplay = new FrameDisplay(frame);
 
 	static float input[] = {0, 2, 0, 0, 0};
 	
@@ -44,6 +43,11 @@ public class Program {
 	static JButton Radierer = new JButton("Radierer");
 	static JButton C = new JButton("C");
 	
+	static int C0 = new Color(150, 255, 50).getRGB(); 	//Erreger
+	static int C1 = new Color(0, 0, 255).getRGB(); 		//Reflektor
+	static int C2 = new Color(255, 0, 0).getRGB(); 		//Absorber
+	static int C3 = new Color(255, 255, 255).getRGB(); 	//Radierer
+	
 	static JButton Freihand = new JButton("Freihand");
 	static JButton Linie = new JButton("Linie");
 	static JButton Quader = new JButton("Quader");
@@ -58,10 +62,22 @@ public class Program {
 	
 	static int frameIndex = 0;
 	
+	static int c = 1;
+	static float cmax = 0;
 	
+	static int fps = 0;
+	
+	
+	@SuppressWarnings("unchecked")
 	public static void Start(){
+		for(int x = frame.getWidth() - 1; x >= 0; x--) {
+			for(int y = frame.getHeight() - 1; y >= 0; y--) {
+				frame.setRGB(x, y, C3);
+			}
+		}
 		SimulationScene.createScene("Wellensimulation");
 		SimulationScene.loadScene(SimulationScene.getScene("Wellensimulation"));
+		SimulationScene.activeScene.addObject(frameDisplay, main.WIDTH/2, main.HEIGHT/2);
 		
 		for(int i = 0; i<5; i++) {
 			toolIndex.add(0);
@@ -190,6 +206,7 @@ public class Program {
 		//s2
 		SimulationSidebar s3 = SimulationWindow.addSidebarRight("Darstellung", 3);
 		
+		@SuppressWarnings("rawtypes")
 		Hashtable colorscheme = new Hashtable();
 		colorscheme.put(0,new JLabel("SW-Farbverlauf"));
 		colorscheme.put(9,new JLabel("Linien"));
@@ -203,7 +220,7 @@ public class Program {
 		}
 	
 	public static void LayerAdd(int x, int y, int tool, int lambda, int c, int time) {
-		if(tool == 0) {
+		if(tool == 0) { //Erreger
 			array.clear();
 			array.add(x);
 			array.add(y);
@@ -211,20 +228,40 @@ public class Program {
 			array.add(lambda);
 			array.add(time);
 			WaveLayer.add(toolIndex.get(tool), array);
+			frame.setRGB(x, y, C0);
 			
-		} else if(tool == 1 || tool == 2) {
+		} else if(tool == 1) { //Reflektor
 			array.clear();
 			array.add(x);
 			array.add(y);
 			array.add(tool);
+			frame.setRGB(x, y, C1);
+			
+		} else if(tool == 2) { //Absorber
+			array.clear();
+			array.add(x);
+			array.add(y);
+			array.add(tool);
+			frame.setRGB(x, y, C2);
 			
 		} else if(tool == 3) {
-			for(int i = WaveLayer.size(); i>0; i--) {
+			boolean cmaxrecalc = false;
+			for(int i = WaveLayer.size() - 1; i >= 0; i--) {
 				if(WaveLayer.get(i).get(0) == x && WaveLayer.get(i).get(1) == y) {
-					for(int t = WaveLayer.get(i).get(2); t <= 4; t++) {
-						toolIndex.set(t, (toolIndex.get(t) - 1));
+					frame.setRGB(WaveLayer.get(i).get(0), WaveLayer.get(i).get(1), C3);
+					if(WaveLayer.get(i).get(2) == 4 && WaveLayer.get(i).get(3) >= cmax) {
+						cmaxrecalc = true;
 					}
 					WaveLayer.remove(i);
+					for(int t = WaveLayer.get(i).get(2) + 1; t <= 4; t++) {
+						if(toolIndex.get(t) - 1 >= 0) {
+							toolIndex.set(t, (toolIndex.get(t) - 1));
+						}
+					}
+					if(cmaxrecalc) {
+						cmaxrecalc = false;
+						recalcC();
+					}
 				}
 			}
 			
@@ -235,6 +272,13 @@ public class Program {
 			array.add(tool);
 			array.add(c);
 			WaveLayer.add(toolIndex.get(tool), array);
+			if(c > cmax) {
+				recalcC();
+				
+			} else {
+				int C4x = new Color(Math.round(255*c/cmax), 255, Math.round(255*c/cmax)).getRGB();
+				frame.setRGB(x, y, C4x);
+			}
 			
 		} else {
 			System.out.println("tool not defined!");
@@ -249,6 +293,18 @@ public class Program {
 		
 	}
 	
+	public static void recalcC() {
+		float cmaxnew = 0;
+		for(int i = toolIndex.get(4); i < WaveLayer.size(); i++) {	
+			if(cmaxnew < WaveLayer.get(i).get(3)) {
+				cmaxnew = WaveLayer.get(i).get(3);
+			}
+		}
+		for(int i = toolIndex.get(4); i < WaveLayer.size(); i++) {
+			frame.setRGB(WaveLayer.get(i).get(0), WaveLayer.get(i).get(1), calcCColor(WaveLayer.get(i).get(3)));
+		}
+	}
+	
 	public static void draw(int form, int tool) {
 		int x1 = 0;
 		int x2 = 0;
@@ -261,39 +317,8 @@ public class Program {
 		int deltaX = 0;
 		int deltaY = 0;
 		int lambda = 10;
-		int c = 1;
 		int time = 0;
 		float m = 0;
-		
-		
-		deltaX = x1 - x2;
-		deltaY = y1 - y2;
-
-		if(deltaX != 0) {
-			m = deltaY / deltaX;
-		} 
-		
-		if (deltaX == 0) {
-			for(int y = startY; y <= endY; y++) {
-				LayerAdd(startX, y, tool, lambda, c, time);
-				
-			}
-			
-		} else if (m <= 1 && m >= -1) {
-			for(int x = startX; x <= endX; x++) {
-				int y = Math.round(m * x);
-				LayerAdd(x, y, tool, lambda, c, time);
-				
-			}
-			
-		} else if (m > 1 || m < -1) {
-			for(int y = startY; y <= endY; y++) {
-				int x = Math.round(y / m);
-				LayerAdd(x, y, tool, lambda, c, time);
-				
-			}
-		
-		}	
 		
 		
 		switch(form) {
@@ -360,9 +385,7 @@ public class Program {
 					endY = Math.round(input[3]);
 					
 				}
-			
-			}
-			
+			}	
 			deltaX = x1 - x2;
 			deltaY = y1 - y2;
 
@@ -412,16 +435,39 @@ public class Program {
 		
 	}
 	
+	public static int calcCColor(float c) {
+		int Color = 0;
+		float Intensity = c/cmax;
+		int r = Math.round(255 * Intensity);
+		int g = Math.round((255 + 50) * Intensity);
+		int b = Math.round((255 + 100) * Intensity);
+		
+		if(r > 255) {
+			r = 255;
+		} else if(r < 0) {
+			r = 0;
+		}
+		if(g > 255) {
+			g = 255;
+		} else if(g < 0) {
+			g = 0;
+		}
+		if(b > 255) {
+			b = 255;
+		} else if(b < 0) {
+			b = 0;
+		}
+		
+		Color = new Color(r, g, b).getRGB();
+		
+		return Color;
+	}
+	
 	public static void calcFrame(ArrayList<ArrayList<Integer>> Layer1, ArrayList<ArrayList<Integer>> Layer2) {
-		BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
+		int Color = 0;
 		
 		int l1size = Layer1.size();
 		int l2size = Layer2.size();
-		
-		int Color = 0;;
-		int C0 = new Color(150, 255, 50).getRGB(); 	//Erreger
-		int C1 = new Color(0, 0, 255).getRGB(); 	//Reflektor
-		int C2 = new Color(255, 0, 0).getRGB(); 	//Absorber
 		
 		for(int i = 0; i < l1size; i++) {
 			if(Layer1.get(i).get(2) == 0) {
@@ -434,28 +480,7 @@ public class Program {
 				Color = C2;
 				
 			} else if(Layer1.get(i).get(2) == 4) {
-				int Intensity = Layer1.get(i).get(3);
-				int r = 255 - Intensity;
-				int g = 255 + 50 - Intensity;
-				int b = 255 + 100 - Intensity;
-				
-				if(r > 255) {
-					r = 255;
-				} else if(r < 0) {
-					r = 0;
-				}
-				if(g > 255) {
-					g = 255;
-				} else if(g < 0) {
-					g = 0;
-				}
-				if(b > 255) {
-					b = 255;
-				} else if(b < 0) {
-					b = 0;
-				}
-				
-				Color = new Color(r, g, b).getRGB();
+				Color = calcCColor((Layer1.get(i).get(3)/cmax));
 				
 			}
 			
@@ -470,10 +495,10 @@ public class Program {
 	}
 	
 
-	public static void Update() {
+	public static void fixedUpdate() {
+	//	draw(formState, toolState);
+		input = Input.getDragCoords(input, false);
 		draw(formState, toolState);
-		
-		
 	}
 	
 }

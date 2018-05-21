@@ -18,11 +18,13 @@ public class main{
 	public static SimulationWindow mainWindow;
 
 	public static float fixedTick = 120f;
+	@SuppressWarnings("rawtypes")
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args){
 		//Set Core-Class
 		try {

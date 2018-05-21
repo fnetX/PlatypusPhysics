@@ -42,6 +42,13 @@ public class SimulationObject {
 		this.type = PrimitiveType.Image;
 	}
 	
+	public SimulationObject(BufferedImage sprite){
+		this.sprite = sprite;
+		this.width = this.sprite.getWidth(null);
+		this.height = this.sprite.getHeight(null);
+		this.type = PrimitiveType.Image;
+	}
+	
 	public void setPosition(float x, float y){
 		this.x = x;
 		this.y = y;
