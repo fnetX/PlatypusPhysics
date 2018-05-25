@@ -20,6 +20,7 @@ import engine.PrimitiveType;
 public class Program {
 
 	public static int radius = 30;
+	public static int UB;
 	
 	public static JSlider ub;
 	
@@ -62,8 +63,13 @@ public class Program {
 	}
 	
 	public static void Update(){
-		inner.setRadius(850000 / ub.getValue());
-		outer.setRadius(1250000 / ub.getValue());
+		if (ub.getValue() != UB) {
+			UB = ub.getValue();
+			inner.setRadius(850000 / UB);
+			outer.setRadius(1250000 / UB);
+			engine.main.mainWindow.graphics.repaint();
+		}
+		
 	}
 	
 	public static void FixedUpdate(){
