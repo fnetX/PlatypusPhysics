@@ -76,7 +76,9 @@ public class main{
 								| NoSuchMethodException | SecurityException e) {
 						e.printStackTrace();
 			    	  }
-			    	  mainWindow.graphics.repaint();
+			    	  // not recommended at this point
+			    	  // call manually when needed or uncomment the following line
+			    	  //mainWindow.graphics.repaint();
 			  }
 			  
 	}
