@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -18,6 +19,7 @@ import engine.SimulationSidebar;
 import engine.SimulationWindow;
 import engine.main;
 import engine.Input;
+import engine.MouseButton;
 import engine.PrimitiveType;
 import engine.SimulationObject;
 
@@ -25,18 +27,31 @@ public class Program {
 	
 
 	public static BufferedImage frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
+	public static BufferedImage preframe = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
 	
-	public static FrameDisplay frameDisplay = new FrameDisplay(frame);
+	public static FrameDisplay frameDisplay = new FrameDisplay(preframe);
 
-	static float input[] = {0, 2, 0, 0, 0};
+	static int input[] = {0, 2, 0, 0, 0, 0};
+	static int lastinput[] = {0, 2, 0, 0, 0, 0};
+	static boolean inputChanged = false;
 	
-	public static Wave wave = new Wave();
+	static int lx1 = 0;
+	static int lx2 = 0;
+	static int ly1 = 0;
+	static int ly2 = 0;
 	
 	public static JSlider scheme;
 	
-	static ArrayList<ArrayList<Integer>> WaveLayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> ELayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> RLayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> ALayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Integer>> CLayer = new ArrayList<ArrayList<Integer>>();
 	
 	static ArrayList<Integer> array = new ArrayList<Integer>();
+	
+	static ArrayList<ArrayList<Integer>> newCoords = new ArrayList<ArrayList<Integer>>();
+	
+	static boolean newCoordsChanged = true;
 	
 	static JButton Erreger = new JButton("Erreger");
 	static JButton Reflektor = new JButton("Reflektor");
@@ -44,6 +59,7 @@ public class Program {
 	static JButton Radierer = new JButton("Radierer");
 	static JButton C = new JButton("C");
 	
+	static int Colors[] = {new Color(150, 255, 50).getRGB(), new Color(0, 0, 255).getRGB(), new Color(255, 0, 0).getRGB(), new Color(255, 255, 255).getRGB()};
 	static int C0 = new Color(150, 255, 50).getRGB(); 	//Erreger
 	static int C1 = new Color(0, 0, 255).getRGB(); 		//Reflektor
 	static int C2 = new Color(255, 0, 0).getRGB(); 		//Absorber
@@ -55,8 +71,6 @@ public class Program {
 	static JButton Ellipse = new JButton("Ellipse");
 	
 	static JButton Start = new JButton("Start");
-	
-	static ArrayList<Integer> toolIndex = new ArrayList<Integer>();
 	
 	static ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
 	
@@ -72,22 +86,20 @@ public class Program {
 	static int fps = 0;
 	static boolean simMode = false;
 	static boolean active = false;
+	static boolean done = false;
 	
 	
 	@SuppressWarnings("unchecked")
-	public static void Start(){
-		for(int x = frame.getWidth() - 1; x >= 0; x--) {
-			for(int y = frame.getHeight() - 1; y >= 0; y--) {
-				frame.setRGB(x, y, C3);
+	public static void Start(){		
+		for(int x = preframe.getWidth() - 1; x >= 0; x--) {
+			for(int y = preframe.getHeight() - 1; y >= 0; y--) {
+				preframe.setRGB(x, y, Colors[3]);
 			}
 		}
+		
 		SimulationScene.createScene("Wellensimulation");
 		SimulationScene.loadScene(SimulationScene.getScene("Wellensimulation"));
 		SimulationScene.activeScene.addObject(frameDisplay, main.WIDTH/2, main.HEIGHT/2);
-		
-		for(int i = 0; i<5; i++) {
-			toolIndex.add(0);
-		}
 		
 		
 		//	SimulationScene.activeScene.addObject(wave, main.WIDTH, main.HEIGHT);
@@ -231,276 +243,286 @@ public class Program {
 		
 		}
 	
-	public static void LayerAdd(int x, int y, int tool, int lambda, int c, int time) {
-		if(tool == 0) { //Erreger
-			array.clear();
-			array.add(x);
-			array.add(y);
-			array.add(tool);
-			array.add(lambda);
-			array.add(time);
-			WaveLayer.add(toolIndex.get(tool), array);
-			frame.setRGB(x, y, C0);
-			
-		} else if(tool == 1) { //Reflektor
-			array.clear();
-			array.add(x);
-			array.add(y);
-			array.add(tool);
-			frame.setRGB(x, y, C1);
-			
-		} else if(tool == 2) { //Absorber
-			array.clear();
-			array.add(x);
-			array.add(y);
-			array.add(tool);
-			frame.setRGB(x, y, C2);
-			
-		} else if(tool == 3) {
-			for(int i = WaveLayer.size() - 1; i >= 0; i--) {
-				if(WaveLayer.get(i).get(0) == x && WaveLayer.get(i).get(1) == y) {
-					frame.setRGB(WaveLayer.get(i).get(0), WaveLayer.get(i).get(1), C3);
-					if(WaveLayer.get(i).get(2) == 4 && WaveLayer.get(i).get(3) >= cmax) {
-						recalcC();
-					}
-					for(int t = WaveLayer.get(i).get(2) + 1; t <= 4; t++) {
-						if(toolIndex.get(t) - 1 >= 0) {
-							toolIndex.set(t, (toolIndex.get(t) - 1));
-						}
-					}
-					WaveLayer.remove(i);
+	public static void getDragCoords() {
+		if(Input.getMouseButton(MouseButton.LEFT)) {
+			if(inputChanged) {
+				for(int i = input.length - 1; i >= 0; i--) {
+					lastinput[i] = input[i];
+				}
+				inputChanged = false;
+			}
+			if(input[0] != 1) {
+				input[2] = Math.round(Input.getMousePosition().x);
+				input[3] = Math.round(Input.getMousePosition().y);
+				input[0] = 1;
+				if(input[2] != lastinput[2] || input[3] != lastinput[3]) {
+					inputChanged = true;
+				}
+					
+			} else if(input[0] == 1) {
+				input[4] = Math.round(Input.getMousePosition().x);
+				input[5] = Math.round(Input.getMousePosition().y);
+				if(input[4] != lastinput[4] || input[5] != lastinput[5]) {
+					inputChanged = true;
 				}
 			}
+		} else {
+			if(input[0] == 1) {
+				input[0] = 2;
+			}
+		}// [2] and [3] are the press coordinates [4] and [5] the release ones and [0] is the parameter for the last status 
+		for(int i = 2; i < 6; i++) {
+			if(input[i] <= 0) {
+				input[i] = 0;
+			}
+		}
+	}
+	
+	public static void draw(int tool, int form) {
+		getDragCoords();
+		switch(form) {
+		case 0: // freehand
+			
+		case 1: //lines
+			if(inputChanged) {
+				calcLine(input[2], input[3], input[4], input[5], tool);
+				inputChanged = false;
+				
+			}
+		}
+		if(input[0] == 2) {
+			editWL();
+			repaintFrame();
+			input[0] = 0;
+		}
+	}
+	
+	public static void editWL() {
+		try {
+			boolean added = false;
+			ArrayList<Integer> tempLayer = new ArrayList<Integer>();
+			for(int i = newCoords.size() - 1; i >= 0; i--) {
+				added = false;
+		/*		for(int ii = ELayer.size() - 1; ii >= 0; i--) {
+					if(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1)) {
+						ELayer.remove(ii);
+					}
+				}
+				for(int ii = RLayer.size() - 1; ii >= 0; i--) {
+					if(newCoords.get(i).get(0) == RLayer.get(ii).get(0) && newCoords.get(i).get(1) == RLayer.get(ii).get(1)) {
+						RLayer.remove(ii);
+					}
+				}
+				for(int ii = ALayer.size() - 1; ii >= 0; i--) {
+					if(newCoords.get(i).get(0) == ALayer.get(ii).get(0) && newCoords.get(i).get(1) == ALayer.get(ii).get(1)) {
+						ALayer.remove(ii);
+					}
+				}
+				for(int ii = CLayer.size() - 1; ii >= 0; i--) {
+					if(newCoords.get(i).get(0) == CLayer.get(ii).get(0) && newCoords.get(i).get(1) == CLayer.get(ii).get(1)) {
+						CLayer.remove(ii);
+					}
+				}*/
+				
+				if(newCoords.get(i).get(2) == 0) {
+					if(!added) {
+						tempLayer = new ArrayList<Integer>(newCoords.get(i));
+						ELayer.add(tempLayer);
+						added = true;
+					}
+				} else if(newCoords.get(i).get(2) == 1) {
+					if(!added) {
+						tempLayer = new ArrayList<Integer>(newCoords.get(i));
+						RLayer.add(tempLayer);
+						added = true;
+					}
+				} else if(newCoords.get(i).get(2) == 2) {
+					if(!added) {
+						tempLayer = new ArrayList<Integer>(newCoords.get(i));
+						ALayer.add(tempLayer);
+						added = true;
+					}
+				} else if(newCoords.get(i).get(2) == 4) {
+					if(!added) {
+						tempLayer = new ArrayList<Integer>(newCoords.get(i));
+						CLayer.add(tempLayer);
+						added = true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	public static void repaintFrame() {
+		int Color = 0;
+		for(int x = preframe.getWidth() - 1; x >= 0; x--) {
+			for(int y = preframe.getHeight() - 1; y >= 0; y--) {
+				preframe.setRGB(x, y, Colors[3]);
+			}
+		}
+		for(int i = ELayer.size() - 1; i >= 0; i--) {
+			preframe.setRGB(ELayer.get(i).get(0), ELayer.get(i).get(1), Colors[0]);
+		}
+		for(int i = RLayer.size() - 1; i >= 0; i--) {
+			preframe.setRGB(RLayer.get(i).get(0), RLayer.get(i).get(1), Colors[1]);
+		}
+		for(int i = ALayer.size() - 1; i >= 0; i--) {
+			preframe.setRGB(ALayer.get(i).get(0), ALayer.get(i).get(1), Colors[2]);
+		}
+		for(int i = CLayer.size() - 1; i >= 0; i--) {
+			Color = calcColor(4, CLayer.get(i).get(3));
+			preframe.setRGB(CLayer.get(i).get(0), CLayer.get(i).get(1), Color);
+		}
+		main.repaint = true;
+	}
+	
+	public static int calcColor(int tool, float c) {
+		int Color = 0;
+		if(tool != 4) {
+			Color = Colors[tool];
 			
 		} else if(tool == 4) {
-			array.clear();
-			array.add(x);
-			array.add(y);
-			array.add(tool);
-			array.add(c);
-			WaveLayer.add(toolIndex.get(tool), array);
-			if(c > cmax) {
-				recalcC();
-				
-			} else {
-				int C4x = new Color(Math.round(255*c/cmax), 255, Math.round(255*c/cmax)).getRGB();
-				frame.setRGB(x, y, C4x);
+			float Intensity = c/cmax;
+			int r = Math.round(255 * Intensity);
+			int g = Math.round((255 + 50) * Intensity);
+			int b = Math.round((255 + 100) * Intensity);
+			
+			if(r > 255) {
+				r = 255;
+			} else if(r < 0) {
+				r = 0;
 			}
-			WaveLayer.add(toolIndex.get(tool), array);
-			
-		} else {
-			System.out.println("tool not defined!");
-			
-		}
-		
-		if(tool >= 0 && tool <= 4 && tool != 3) {
-			for(int i = tool + 1; i <= 4; i++) {
-				toolIndex.set(i, (toolIndex.get(i) + 1));
+			if(g > 255) {
+				g = 255;
+			} else if(g < 0) {
+				g = 0;
 			}
-		}
-	}
-	
-	public static void recalcC() {
-		float cmaxnew = 0;
-		for(int i = toolIndex.get(4); i < WaveLayer.size(); i++) {	
-			if(cmaxnew < WaveLayer.get(i).get(3)) {
-				cmaxnew = WaveLayer.get(i).get(3);
-			}
-		}
-		for(int i = toolIndex.get(4); i < WaveLayer.size(); i++) {
-			frame.setRGB(WaveLayer.get(i).get(0), WaveLayer.get(i).get(1), calcCColor(WaveLayer.get(i).get(3)));
-		}
-	}
-	
-	public static void draw(int form, int tool) {
-		int x1 = 0;
-		int x2 = 0;
-		int y1 = 0;
-		int y2 = 0;
-		int startX = 0;
-		int endX = 0;
-		int startY = 0;
-		int endY = 0;
-		int deltaX = 0;
-		int deltaY = 0;
-		int lambda = 10;
-		int time = 0;
-		float m = 0;		
-		
-		switch(form) {
-		case 0: //free
-			input = Input.getDragCoords(input, true);
-			
-		case 1: //line
-			input = Input.getDragCoords(input, false);
-			
-			x1 = Math.round(input[2]);
-			x2 = Math.round(input[4]);
-			y1 = Math.round(input[3]);
-			y2 = Math.round(input[5]);
-			
-			if(input[2] == input[4]) {
-				deltaX = 0;
-				startX = Math.round(input[2]);
-				endX = Math.round(input[2]);
-				
-				if(input[5] > input[3]) {
-					startY = Math.round(input[3]);
-					endY = Math.round(input[5]);
-					
-				} else if (input[5] < input[3]) {
-					startY = Math.round(input[5]);
-					endY = Math.round(input[3]);
-					
-				}
-				
-			} else if(input[3] == input[5]) {
-				deltaY = 0;
-				startY = Math.round(input[3]);
-				endY = Math.round(input[3]);
-				
-				if(input[4] > input[2]) {
-					startX = Math.round(input[2]);
-					endX = Math.round(input[4]);
-					
-				} else if (input[4] < input[2]) {
-					startX = Math.round(input[4]);
-					endX = Math.round(input[2]);
-					
-				}
-				
-				
-			} else {
-				
-				if(input[4] > input[2]) {
-					startX = Math.round(input[2]);
-					endX = Math.round(input[4]);
-					
-				} else if(input[4] < input[2]) {
-					startX = Math.round(input[4]);
-					endX = Math.round(input[2]);
-					
-				}
-				
-				if(input[5] > input[3]) {
-					startY = Math.round(input[3]);
-					endY = Math.round(input[5]);
-					
-				} else if(input[5] < input[3]) {
-					startY = Math.round(input[5]);
-					endY = Math.round(input[3]);
-					
-				}
-			}	
-			deltaX = x1 - x2;
-			deltaY = y1 - y2;
-
-			if(deltaX != 0) {
-				m = deltaY / deltaX;
-			} 
-			
-			if (deltaX == 0) {
-				for(int y = startY; y <= endY; y++) {
-					LayerAdd(startX, y, tool, lambda, c, time);
-					
-				}
-			
-			} else if (deltaY == 0) {
-				for(int x = startX; x <= endX; x++) {
-					LayerAdd(x, startY, tool, lambda, c, time);
-					
-				}
-				
-			} else if (m <= 1 && m >= -1) {
-				for(int x = startX; x <= endX; x++) {
-					int y = Math.round(m * x);
-					LayerAdd(x, y, tool, lambda, c, time);
-					
-					
-				}
-				
-			} else if (m > 1 || m < -1) {
-				for(int y = startY; y <= endY; y++) {
-					int x = Math.round(y / m);
-					LayerAdd(x, y, tool, lambda, c, time);
-					
-				}
-			
+			if(b > 255) {
+				b = 255;
+			} else if(b < 0) {
+				b = 0;
 			}
 			
-			
-			
-		case 2: //rectangle
-			input = Input.getDragCoords(input, false);
-			
-		case 3: //ellipse
-			input = Input.getDragCoords(input, false);
-			
+			Color = new Color(r, g, b).getRGB();
 		}
-		
-		
-	}
-	
-	public static int calcCColor(float c) {
-		int Color = 0;
-		float Intensity = c/cmax;
-		int r = Math.round(255 * Intensity);
-		int g = Math.round((255 + 50) * Intensity);
-		int b = Math.round((255 + 100) * Intensity);
-		
-		if(r > 255) {
-			r = 255;
-		} else if(r < 0) {
-			r = 0;
-		}
-		if(g > 255) {
-			g = 255;
-		} else if(g < 0) {
-			g = 0;
-		}
-		if(b > 255) {
-			b = 255;
-		} else if(b < 0) {
-			b = 0;
-		}
-		
-		Color = new Color(r, g, b).getRGB();
 		
 		return Color;
 	}
 	
-	public static void calcFrame(ArrayList<ArrayList<Integer>> Layer1, ArrayList<ArrayList<Integer>> Layer2) {
-		int Color = 0;
-		
-		int l1size = Layer1.size();
-		int l2size = Layer2.size();
-		
-		for(int i = 0; i < l1size; i++) {
-			if(Layer1.get(i).get(2) == 0) {
-				Color = C0;
-				
-			} else if(Layer1.get(i).get(2) == 1) {
-				Color = C1;
-				
-			} else if(Layer1.get(i).get(2) == 2) {
-				Color = C2;
-				
-			} else if(Layer1.get(i).get(2) == 4) {
-				Color = calcCColor((Layer1.get(i).get(3)/cmax));
-				
+	public static void calcLine(int x1, int y1, int x2, int y2, int tool) {
+		if(lx1 != x1 || lx2 != x2 || ly1 != y1 || ly2 != y2) {
+			if(tool != 3) {
+				for(int i = 0; i < newCoords.size(); i++) {
+					preframe.setRGB(newCoords.get(i).get(0), newCoords.get(i).get(1), Colors[3]);
+				}
 			}
 			
-			frame.setRGB(Layer1.get(i).get(0), Layer1.get(i).get(1), Color);
+			newCoords = new ArrayList<ArrayList<Integer>>();
+			ArrayList<Integer> newCoord = new ArrayList<Integer>();
+			int x = 0;
+			int y = 0;
+			int startX = 0;
+			int endX = 0;
+			int startY = 0;
+			int endY = 0;
+			double deltaX = 0;
+			double deltaY = 0;
+			double m = 0;
+			double n = 0; 
+			
+			deltaX = x1 - x2;
+			deltaY = y1 - y2;
+			
+			m = deltaY / deltaX;
+			
+			n = (y1 - (m * x1));
+			
+			if(m <= 1 && m >= -1) {
+				if(x1 > x2) {
+					startX = x2;
+					endX = x1;
+					startY = y2;
+				} else if(x1 == x2) {
+					startX = x1;
+					endX = x1;
+					startY = y1;
+				} else if(x1 < x2) {
+					startX = x1;
+					endX = x2;
+					startY = y1;
+				}
+				
+				y = startY;
+				for(x = startX; x <= endX; x++) {
+					y = (int) Math.round((m * x) + n);
+					if(x >= 0 && x <= main.WIDTH && y >= 0 && y <= main.HEIGHT) {
+						newCoord = new ArrayList<Integer>();
+						newCoord.add(x);
+						newCoord.add(y);
+						newCoord.add(tool);
+						if(tool == 0) {
+							newCoord.add(frameIndex);
+						}
+						newCoords.add(0, newCoord);
+						newCoordsChanged = true;
+					}
+				}
+				
+			} else if(m > 1 || m < -1) {
+				if(y1 > y2) {
+					startY = y2;
+					endY = y1;
+					startX = x2;
+				} else if(y1 == y2) {
+					startY = y1;
+					endY = y1;
+					startX = x1;
+				} else if(y1 < y2) {
+					startY = y1;
+					endY = y2;
+					startX = x1;
+				}
+				
+				x = startX;
+				for(y = startY; y <= endY; y++) {
+					x = (int) Math.round((y - n) / m);
+					if(x >= 0 && x <= main.WIDTH && y >= 0 && y <= main.HEIGHT) {
+						newCoord = new ArrayList<Integer>();
+						newCoord.add(x);
+						newCoord.add(y);
+						newCoord.add(tool);
+						newCoords.add(0, newCoord);
+						newCoordsChanged = true;
+					}
+				}
+			}
+			
+			if(newCoordsChanged) {
+				for(int i = 0; i < newCoords.size(); i++) {
+					int Color = calcColor(newCoords.get(i).get(2), c);
+					preframe.setRGB(newCoords.get(i).get(0), newCoords.get(i).get(1), Color);
+					System.out.println(newCoords.get(i).get(0) + " " + newCoords.get(i).get(1) + " " + newCoords.get(i).get(2) + " " + newCoords.size());
+				}
+				newCoordsChanged = false;
+				
+				main.repaint = true;
+			}
+			lx1 = x1;
+			lx2 = x2;
+			ly1 = y1;
+			ly2 = y2;
 		}
-		
-		for(int i = 0; i < l2size; i++) {
-			frame.setRGB(Layer2.get(i).get(0), Layer2.get(i).get(1), Layer2.get(i).get(2));
-		}
-
-		frames.add(frame);
 	}
 	
-	public static void fixedUpdate() {
-		draw(formState, toolState);
+	
+	public static void FixedUpdate() {
+		
+	}
+	
+	public static void Update() {
+		draw(toolState, formState);
+		
 	}
 }

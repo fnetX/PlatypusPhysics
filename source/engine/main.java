@@ -16,7 +16,8 @@ public class main{
 	public static float fixedTick = 100f;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
-	
+	public static boolean update = true;
+	public static boolean repaint = true;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -63,7 +64,7 @@ public class main{
 			  
 		
 		//Update
-			  while(true){
+			  while(update){
 				for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
 							SimulationScene.activeScene.objects.get(i).Update();
 			    	  }
@@ -73,7 +74,10 @@ public class main{
 								| NoSuchMethodException | SecurityException e) {
 						e.printStackTrace();
 			    	  }
-			    	  mainWindow.graphics.repaint();
+			    if(repaint) {
+			    	mainWindow.graphics.repaint();
+			    	repaint = false;
+			  	}
 			  }
 			  
 	}

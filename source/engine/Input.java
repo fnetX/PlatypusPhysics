@@ -15,8 +15,6 @@ public class Input implements KeyListener, MouseListener {
 	public static Input instance = new Input();
 	public static List<Character> pressedKeys = new ArrayList<Character>();
 	public static List<Integer> pressedMouseButtons = new ArrayList<Integer>();
-	
-	static float input[] = {0, 0, 0, 0, 0};
 
 	public static boolean getKey(char c){
 		return pressedKeys.contains(c);
@@ -82,41 +80,6 @@ public class Input implements KeyListener, MouseListener {
 	public void mouseReleased(MouseEvent e) {
 	if(pressedMouseButtons.contains(e.getButton()))
 			pressedMouseButtons.remove(Integer.valueOf(e.getButton()));	
-	}
-	
-	
-	public static float[] getDragCoords(float input[], boolean fmode) {
-		if(!fmode) {
-			if(Input.getMouseButton(MouseButton.LEFT) && input[0] == 0) {
-				input[2] = Input.getMousePosition().x;
-				input[3] = Input.getMousePosition().y;
-				
-				input[4] = 0;
-				input[5] = 0;
-				
-				input[0] = 1;
-				
-			} else if(Input.getMouseButton(MouseButton.LEFT) && input[0] == 1) {
-				input[4] = Input.getMousePosition().x;
-				input[5] = Input.getMousePosition().y;
-				
-			} else if(!Input.getMouseButton(MouseButton.LEFT) && input[0] == 1) {
-				input[0] = 0;
-			}
-			
-			return input; // [2] and [3] are the press coordinates [4] and [5] the release ones and [0] is the parameter for the last status //implementation: input = Input.getDragCoords(input[4]); //
-		
-		} else {
-			if(Input.getMouseButton(MouseButton.LEFT) && ((input[(int) (input[1] - 2)] != Input.getMousePosition().x) || (input[(int) (input[1] - 1)] != Input.getMousePosition().y))) {
-				input[(int) (input[1])] = Input.getMousePosition().x;
-				input[(int) (input[1] + 1)] = Input.getMousePosition().y;
-				
-				input[1] += 2; 
-				
-			}
-			
-			return input;
-		}
 	}
 
 }
