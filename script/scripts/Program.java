@@ -41,6 +41,7 @@ public class Program {
 	static int ly2 = 0;
 	
 	public static JSlider scheme;
+	public static JSlider scheme1;
 	
 	static ArrayList<ArrayList<Integer>> ELayer = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> RLayer = new ArrayList<ArrayList<Integer>>();
@@ -59,6 +60,14 @@ public class Program {
 	static JButton Radierer = new JButton("Radierer");
 	static JButton C = new JButton("C");
 	
+	static boolean reflektierend = false;
+	
+	static JButton Reflektierend = new JButton("Reflektierend");
+	static JButton Absorbierend = new JButton("Absorbierend");
+	
+	static JButton Bearbeiten = new JButton("Bearbeiten");
+	static JButton Berechnen = new JButton("Berechnen");
+	
 	static int Colors[] = {new Color(150, 255, 50).getRGB(), new Color(0, 0, 255).getRGB(), new Color(255, 0, 0).getRGB(), new Color(255, 255, 255).getRGB()};
 	static int C0 = new Color(150, 255, 50).getRGB(); 	//Erreger
 	static int C1 = new Color(0, 0, 255).getRGB(); 		//Reflektor
@@ -71,6 +80,7 @@ public class Program {
 	static JButton Ellipse = new JButton("Ellipse");
 	
 	static JButton Start = new JButton("Start");
+	static JButton Stop = new JButton("Stop");
 	
 	static ArrayList<BufferedImage> frames = new ArrayList<BufferedImage>();
 	
@@ -219,10 +229,30 @@ public class Program {
 			}});
 		
 		
+		SimulationSidebar s3 = SimulationWindow.addSidebarLeft("Rand", 3);
+		
+		s3.getRow(0).add(Reflektierend);
+		Reflektierend.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Reflektierend.setEnabled(false);
+			Absorbierend.setEnabled(true);
+			
+			reflektierend = true;
+			}});
+		
+		s3.getRow(1).add(Absorbierend);
+		Absorbierend.setEnabled(false);
+		Absorbierend.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Reflektierend.setEnabled(true);
+			Absorbierend.setEnabled(false);
+			
+			reflektierend = false;
+			}});
 		
 		
-		//s2
-		SimulationSidebar s3 = SimulationWindow.addSidebarRight("Darstellung", 3);
+		//s3
+		SimulationSidebar s4 = SimulationWindow.addSidebarRight("Darstellung", 4);
 		
 		@SuppressWarnings("rawtypes")
 		Hashtable colorscheme = new Hashtable();
@@ -232,14 +262,56 @@ public class Program {
 		scheme = new JSlider(JSlider.HORIZONTAL, 0, 9, 9);
 		scheme.setLabelTable(colorscheme);
 		scheme.setPaintLabels(true);
-		s3.getRow(0).add(scheme);
+		s4.getRow(0).add(scheme);
 		
-		s3.getRow(1).add(Start);
-		Start.addActionListener(new ActionListener() {
+		s4.getRow(1).add(Bearbeiten);
+		Bearbeiten.setEnabled(false);
+		Bearbeiten.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
-			Start.setLabel("Stop");
+			Bearbeiten.setEnabled(false);
+			Berechnen.setEnabled(true);
+			Start.setEnabled(false);
+			Stop.setEnabled(false);
+			
+			simMode = false;
 			}});
 		
+		s4.getRow(1).add(Berechnen);
+		Berechnen.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Bearbeiten.setEnabled(true);
+			Berechnen.setEnabled(false);
+			
+			simMode = true;
+			}});
+		
+		s4.getRow(2).add(Start);
+		Start.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Start.setEnabled(false);
+			Stop.setEnabled(true);
+			
+			}});
+		
+		s4.getRow(2).add(Stop);
+		Start.setEnabled(false);
+		Stop.setEnabled(false);
+		Stop.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			Start.setEnabled(true);
+			Stop.setEnabled(false);
+			
+			}});
+		
+		@SuppressWarnings("rawtypes")
+		Hashtable colorscheme1 = new Hashtable();
+		colorscheme1.put(0,new JLabel("0"));
+		colorscheme1.put(29,new JLabel("30"));
+		
+		scheme1 = new JSlider(JSlider.HORIZONTAL, 0, 29, 29);
+		scheme1.setLabelTable(colorscheme1);
+		scheme1.setPaintLabels(true);
+		s4.getRow(3).add(scheme1);
 		
 		}
 	
@@ -522,7 +594,10 @@ public class Program {
 	}
 	
 	public static void Update() {
-		draw(toolState, formState);
-		
+		if(!simMode) {
+			draw(toolState, formState);
+		} else if(simMode) {
+	//		calcFrame();
+		}
 	}
 }
