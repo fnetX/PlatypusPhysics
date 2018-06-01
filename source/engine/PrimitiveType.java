@@ -1,5 +1,5 @@
 package engine;
 
 public enum PrimitiveType {
-	 Oval, Rectangle, Image, Radius 
+	 Oval, Rectangle, Image, Circle 
 }

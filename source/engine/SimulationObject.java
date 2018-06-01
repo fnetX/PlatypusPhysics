@@ -49,7 +49,7 @@ public class SimulationObject {
 		this.color = c;
 		this.width = this.radius * 2;
 		this.height = this.radius *2;
-		this.type = PrimitiveType.Radius;
+		this.type = PrimitiveType.Circle;
 	}
 	
 	public void setPosition(float x, float y){
@@ -61,8 +61,8 @@ public class SimulationObject {
 		this.rotation = deg;		
 	}
 	
-	public void setRadius(float radius) {
-		this.radius = (int) radius;
+	public void setRadius(double d) {
+		this.radius = (int) d;
 		this.width = this.radius * 2;
 		this.height = this.radius *2;
 	}

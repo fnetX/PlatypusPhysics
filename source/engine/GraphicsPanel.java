@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 
 import javax.swing.JPanel;
@@ -51,10 +53,15 @@ public class GraphicsPanel extends JPanel {
 		g.setColor(o.color);
 		g.fillOval(0, 0, o.width, o.height);
 		break;
-	case Radius:
+	case Circle:
 		g.setColor(o.color);
-		g.draw(new Ellipse2D.Double(0, 0, o.width, o.height));
-
+		Ellipse2D in = new Ellipse2D.Double(3,3, o.width - 6, o.height - 6);
+		Ellipse2D out = new Ellipse2D.Double(0,0,o.width, o.height);
+		Area inner = new Area(in);
+		Area outer = new Area(out);
+		outer.subtract(inner);
+		//g.draw(new Ellipse2D.Double(0, 0, o.width, o.height));
+		g.fill(outer);
 	}
 
 	g.setTransform(identity);	
