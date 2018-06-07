@@ -375,61 +375,62 @@ public class Program {
 	
 	public static void editWL() {
 		try {
-			boolean added = false;
+			for(int i = 0; i < 100; i++) {
+				array = new ArrayList<Integer>();
+				array.add(100);
+				array.add(100 + i);
+				array.add(toolState);
+				newCoords.add(array);
+				ELayer.add(array);
+			}
+			int n = newCoords.size() - 1;
+
 			ArrayList<Integer> tempLayer = new ArrayList<Integer>();
-			for(int i = newCoords.size() - 1; i >= 0; i--) {
-				added = false;
+			for(int i = n; i >= 0; i--) {
 				for(int ii = ELayer.size() - 1; ii >= 0; ii--) {
+
+//					System.out.println(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1));
 					if(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1)) {
 						ELayer.remove(ii);
-						System.out.println(newCoords.get(i).get(0) + "=" + ELayer.get(ii).get(0) + " " + newCoords.get(i).get(1) + "=" + ELayer.get(ii).get(1));
 						System.out.println("remove");
 					}
 				}
 				for(int ii = RLayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == RLayer.get(ii).get(0) && newCoords.get(i).get(1) == RLayer.get(ii).get(1)) {
 						RLayer.remove(ii);
+						System.out.println("remove");
 					}
 				}
 				for(int ii = ALayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == ALayer.get(ii).get(0) && newCoords.get(i).get(1) == ALayer.get(ii).get(1)) {
 						ALayer.remove(ii);
+						System.out.println("remove");
 					}
 				}
 				for(int ii = CLayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == CLayer.get(ii).get(0) && newCoords.get(i).get(1) == CLayer.get(ii).get(1)) {
 						CLayer.remove(ii);
-					}
-				}
-				
-				if(newCoords.get(i).get(2) == 0) {
-					if(!added) {
-						tempLayer = new ArrayList<Integer>(newCoords.get(i));
-						ELayer.add(tempLayer);
-						added = true;
-					}
-				} else if(newCoords.get(i).get(2) == 1) {
-					if(!added) {
-						tempLayer = new ArrayList<Integer>(newCoords.get(i));
-						RLayer.add(tempLayer);
-						added = true;
-					}
-				} else if(newCoords.get(i).get(2) == 2) {
-					if(!added) {
-						tempLayer = new ArrayList<Integer>(newCoords.get(i));
-						ALayer.add(tempLayer);
-						added = true;
-					}
-				} else if(newCoords.get(i).get(2) == 4) {
-					if(!added) {
-						tempLayer = new ArrayList<Integer>(newCoords.get(i));
-						CLayer.add(tempLayer);
-						added = true;
+						System.out.println("remove");
 					}
 				}
 			}
+			for(int i = n; i >= 0; i--) {
+				if(newCoords.get(i).get(2) == 0) {
+					tempLayer = new ArrayList<Integer>(newCoords.get(i));
+					ELayer.add(tempLayer);
+				} else if(newCoords.get(i).get(2) == 1) {
+					tempLayer = new ArrayList<Integer>(newCoords.get(i));
+					RLayer.add(tempLayer);
+				} else if(newCoords.get(i).get(2) == 2) {
+					tempLayer = new ArrayList<Integer>(newCoords.get(i));
+					ALayer.add(tempLayer);
+				} else if(newCoords.get(i).get(2) == 4) {
+					tempLayer = new ArrayList<Integer>(newCoords.get(i));
+					CLayer.add(tempLayer);
+				}
+			}
 		} catch (Exception e) {
-			
+			System.out.println(e);
 		}
 	}
 	
