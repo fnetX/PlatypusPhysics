@@ -27,18 +27,26 @@ public class FrameDisplay extends SimulationObject {
 	
 	public void simMode() {
 		try {
-			counter++;
+			Program.fps = Program.fpsslider.getValue();
 			if(Program.fps > 0) {
 				if(counter >= (main.fixedTick / Program.fps)) {
 					counter = 0;
 						
 					this.sprite = Program.frames.get(activeFrame);
+					main.repaint = true;
 						
 					if(Program.frames.size() > activeFrame + 1) {
 						activeFrame++;
 					} else {
 						activeFrame = 0;
 					}
+				}
+				counter++;
+			} else {
+				if(counter == 0) {
+					this.sprite = Program.frames.get(activeFrame);
+					main.repaint = true;
+					counter++;
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {

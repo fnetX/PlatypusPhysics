@@ -40,8 +40,8 @@ public class Program {
 	static int ly1 = 0;
 	static int ly2 = 0;
 	
-	public static JSlider scheme;
-	public static JSlider scheme1;
+	public static JSlider patternSlider;
+	public static JSlider fpsslider;
 	
 	static ArrayList<ArrayList<Integer>> ELayer = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> RLayer = new ArrayList<ArrayList<Integer>>();
@@ -88,13 +88,15 @@ public class Program {
 	static int formState = 1;
 	
 	static int frameIndex = 0;
-
+	static int maxFrames = 2;
+	static int calculatingFrame = 0;
 
 	static int c = 1;
 	static float cmax = 0;
 
 	static int fps = 0;
 	static boolean simMode = false;
+	static boolean modeChanged = false;
 	static boolean active = false;
 	static boolean done = false;
 	
@@ -259,10 +261,10 @@ public class Program {
 		colorscheme.put(0,new JLabel("SW-Farbverlauf"));
 		colorscheme.put(9,new JLabel("Linien"));
 		
-		scheme = new JSlider(JSlider.HORIZONTAL, 0, 9, 9);
-		scheme.setLabelTable(colorscheme);
-		scheme.setPaintLabels(true);
-		s4.getRow(0).add(scheme);
+		patternSlider = new JSlider(JSlider.HORIZONTAL, 0, 9, 9);
+		patternSlider.setLabelTable(colorscheme);
+		patternSlider.setPaintLabels(true);
+		s4.getRow(0).add(patternSlider);
 		
 		s4.getRow(1).add(Bearbeiten);
 		Bearbeiten.setEnabled(false);
@@ -291,6 +293,7 @@ public class Program {
 			Start.setEnabled(false);
 			Stop.setEnabled(true);
 			
+			active = true;
 			}});
 		
 		s4.getRow(2).add(Stop);
@@ -301,20 +304,21 @@ public class Program {
 			Start.setEnabled(true);
 			Stop.setEnabled(false);
 			
+			active = false;
 			}});
 		
 		@SuppressWarnings("rawtypes")
 		Hashtable colorscheme1 = new Hashtable();
 		colorscheme1.put(0,new JLabel("0"));
+		colorscheme1.put(14,new JLabel("fps"));
 		colorscheme1.put(29,new JLabel("30"));
 		
-		scheme1 = new JSlider(JSlider.HORIZONTAL, 0, 29, 29);
-		scheme1.setLabelTable(colorscheme1);
-		scheme1.setPaintLabels(true);
-		s4.getRow(3).add(scheme1);
-		
-		}
-	
+		fpsslider = new JSlider(JSlider.HORIZONTAL, 0, 29, 29);
+		fpsslider.setLabelTable(colorscheme1);
+		fpsslider.setPaintLabels(true);
+		s4.getRow(3).add(fpsslider);
+	}
+			
 	public static void getDragCoords() {
 		if(Input.getMouseButton(MouseButton.LEFT)) {
 			if(inputChanged) {
@@ -375,26 +379,28 @@ public class Program {
 			ArrayList<Integer> tempLayer = new ArrayList<Integer>();
 			for(int i = newCoords.size() - 1; i >= 0; i--) {
 				added = false;
-		/*		for(int ii = ELayer.size() - 1; ii >= 0; i--) {
+				for(int ii = ELayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1)) {
 						ELayer.remove(ii);
+						System.out.println(newCoords.get(i).get(0) + "=" + ELayer.get(ii).get(0) + " " + newCoords.get(i).get(1) + "=" + ELayer.get(ii).get(1));
+						System.out.println("remove");
 					}
 				}
-				for(int ii = RLayer.size() - 1; ii >= 0; i--) {
+				for(int ii = RLayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == RLayer.get(ii).get(0) && newCoords.get(i).get(1) == RLayer.get(ii).get(1)) {
 						RLayer.remove(ii);
 					}
 				}
-				for(int ii = ALayer.size() - 1; ii >= 0; i--) {
+				for(int ii = ALayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == ALayer.get(ii).get(0) && newCoords.get(i).get(1) == ALayer.get(ii).get(1)) {
 						ALayer.remove(ii);
 					}
 				}
-				for(int ii = CLayer.size() - 1; ii >= 0; i--) {
+				for(int ii = CLayer.size() - 1; ii >= 0; ii--) {
 					if(newCoords.get(i).get(0) == CLayer.get(ii).get(0) && newCoords.get(i).get(1) == CLayer.get(ii).get(1)) {
 						CLayer.remove(ii);
 					}
-				}*/
+				}
 				
 				if(newCoords.get(i).get(2) == 0) {
 					if(!added) {
@@ -575,7 +581,7 @@ public class Program {
 				for(int i = 0; i < newCoords.size(); i++) {
 					int Color = calcColor(newCoords.get(i).get(2), c);
 					preframe.setRGB(newCoords.get(i).get(0), newCoords.get(i).get(1), Color);
-					System.out.println(newCoords.get(i).get(0) + " " + newCoords.get(i).get(1) + " " + newCoords.get(i).get(2) + " " + newCoords.size());
+			//		System.out.println(newCoords.get(i).get(0) + " " + newCoords.get(i).get(1) + " " + newCoords.get(i).get(2) + " " + newCoords.size());
 				}
 				newCoordsChanged = false;
 				
@@ -588,6 +594,33 @@ public class Program {
 		}
 	}
 	
+	public static void calcFrames() {
+		for(calculatingFrame = 0; calculatingFrame < maxFrames; calculatingFrame++) {
+			for(int x = frame.getWidth() - 1; x >= 0; x--) {
+				for(int y = frame.getHeight() - 1; y >= 0; y--) {
+					frame.setRGB(x, y, Colors[3]);
+				}
+			}
+			for(int ii = RLayer.size() - 1; ii >= 0; ii--) {
+				frame.setRGB(RLayer.get(ii).get(0), RLayer.get(ii).get(1), Colors[1]);
+			}
+			for(int ii = ALayer.size() - 1; ii >= 0; ii--) {
+				frame.setRGB(ALayer.get(ii).get(0), ALayer.get(ii).get(1), Colors[3]);
+			}
+			for(int ii = CLayer.size() - 1; ii >= 0; ii--) {
+				frame.setRGB(CLayer.get(ii).get(0), CLayer.get(ii).get(1), Colors[4]);
+			}
+			
+			for(int ii = ELayer.size() - 1; ii >= 0; ii--) {
+				
+				frame.setRGB(ELayer.get(ii).get(0), ELayer.get(ii).get(1), Colors[0]);
+			}
+			
+			frames.add(calculatingFrame, frame);
+		}
+		Start.setEnabled(true);
+	}
+	
 	
 	public static void FixedUpdate() {
 		
@@ -596,8 +629,11 @@ public class Program {
 	public static void Update() {
 		if(!simMode) {
 			draw(toolState, formState);
-		} else if(simMode) {
-	//		calcFrame();
+			modeChanged = true;
+		} else if(simMode && modeChanged) {
+			System.out.println("simMode");
+			calcFrames();
+			modeChanged = false;
 		}
 	}
 }
