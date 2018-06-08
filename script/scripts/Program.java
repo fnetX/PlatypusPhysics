@@ -42,8 +42,9 @@ public class Program {
 	
 	public static JSlider patternSlider;
 	public static JSlider fpsslider;
-	
+
 	static ArrayList<ArrayList<Integer>> ELayer = new ArrayList<ArrayList<Integer>>();
+	static ArrayList<ArrayList<Double>> subELayer = new ArrayList<ArrayList<Double>>();
 	static ArrayList<ArrayList<Integer>> RLayer = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> ALayer = new ArrayList<ArrayList<Integer>>();
 	static ArrayList<ArrayList<Integer>> CLayer = new ArrayList<ArrayList<Integer>>();
@@ -375,40 +376,55 @@ public class Program {
 	
 	public static void editWL() {
 		try {
-			for(int i = 0; i < 100; i++) {
-				array = new ArrayList<Integer>();
-				array.add(100);
-				array.add(100 + i);
-				array.add(toolState);
-				newCoords.add(array);
-				ELayer.add(array);
-			}
+//			for(int i = 0; i < 100; i++) {
+//				array = new ArrayList<Integer>();
+//				array.add(100);
+//				array.add(100 + i);
+//				array.add(toolState);
+//				newCoords.add(array);
+//				ELayer.add(array);
+//			}
 			int n = newCoords.size() - 1;
 
 			ArrayList<Integer> tempLayer = new ArrayList<Integer>();
 			for(int i = n; i >= 0; i--) {
 				for(int ii = ELayer.size() - 1; ii >= 0; ii--) {
-
-//					System.out.println(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1));
-					if(newCoords.get(i).get(0) == ELayer.get(ii).get(0) && newCoords.get(i).get(1) == ELayer.get(ii).get(1)) {
+					int x1 = newCoords.get(i).get(0);
+					int x2 = ELayer.get(ii).get(0);
+					int y1 = newCoords.get(i).get(1);
+					int y2 = ELayer.get(ii).get(1);
+//					System.out.println(x1 + " == " + x2 + " " + y1 +" == "+ y2);
+					if(x1 == x2 && y1 == y2) {
 						ELayer.remove(ii);
 						System.out.println("remove");
 					}
 				}
 				for(int ii = RLayer.size() - 1; ii >= 0; ii--) {
-					if(newCoords.get(i).get(0) == RLayer.get(ii).get(0) && newCoords.get(i).get(1) == RLayer.get(ii).get(1)) {
+					int x1 = newCoords.get(i).get(0);
+					int x2 = RLayer.get(ii).get(0);
+					int y1 = newCoords.get(i).get(1);
+					int y2 = RLayer.get(ii).get(1);
+					if(x1 == x2 && y1 == y2) {
 						RLayer.remove(ii);
 						System.out.println("remove");
 					}
 				}
 				for(int ii = ALayer.size() - 1; ii >= 0; ii--) {
-					if(newCoords.get(i).get(0) == ALayer.get(ii).get(0) && newCoords.get(i).get(1) == ALayer.get(ii).get(1)) {
+					int x1 = newCoords.get(i).get(0);
+					int x2 = ALayer.get(ii).get(0);
+					int y1 = newCoords.get(i).get(1);
+					int y2 = ALayer.get(ii).get(1);
+					if(x1 == x2 && y1 == y2) {
 						ALayer.remove(ii);
 						System.out.println("remove");
 					}
 				}
 				for(int ii = CLayer.size() - 1; ii >= 0; ii--) {
-					if(newCoords.get(i).get(0) == CLayer.get(ii).get(0) && newCoords.get(i).get(1) == CLayer.get(ii).get(1)) {
+					int x1 = newCoords.get(i).get(0);
+					int x2 = CLayer.get(ii).get(0);
+					int y1 = newCoords.get(i).get(1);
+					int y2 = CLayer.get(ii).get(1);
+					if(x1 == x2 && y1 == y2) {
 						CLayer.remove(ii);
 						System.out.println("remove");
 					}
@@ -596,25 +612,43 @@ public class Program {
 	}
 	
 	public static void calcFrames() {
+		frames = new ArrayList<BufferedImage>();
+		subELayer = new ArrayList<ArrayList<Double>>();
+		for(int i = ELayer.size() - 1; i >= 0; i--) {
+			ArrayList<Double> temparray = new ArrayList<Double>();
+			double x = ELayer.get(i).get(0);
+			double y = ELayer.get(i).get(1);
+			temparray.add(x);
+			temparray.add(y);
+			subELayer.add(temparray);
+		}
 		for(calculatingFrame = 0; calculatingFrame < maxFrames; calculatingFrame++) {
-			for(int x = frame.getWidth() - 1; x >= 0; x--) {
-				for(int y = frame.getHeight() - 1; y >= 0; y--) {
-					frame.setRGB(x, y, Colors[3]);
-				}
-			}
+			frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
+			int radius = calculatingFrame + 1;
 			for(int ii = RLayer.size() - 1; ii >= 0; ii--) {
 				frame.setRGB(RLayer.get(ii).get(0), RLayer.get(ii).get(1), Colors[1]);
 			}
 			for(int ii = ALayer.size() - 1; ii >= 0; ii--) {
-				frame.setRGB(ALayer.get(ii).get(0), ALayer.get(ii).get(1), Colors[3]);
+				frame.setRGB(ALayer.get(ii).get(0), ALayer.get(ii).get(1), Colors[2]);
 			}
 			for(int ii = CLayer.size() - 1; ii >= 0; ii--) {
 				frame.setRGB(CLayer.get(ii).get(0), CLayer.get(ii).get(1), Colors[4]);
 			}
 			
-			for(int ii = ELayer.size() - 1; ii >= 0; ii--) {
+			
+			for(int ii = subELayer.size() - 1; ii >= 0; ii--) {
+				int x = subELayer.get(ii).get(0);
+				int y = subELayer.get(ii).get(1);
+				frame.setRGB(x, y, Colors[0]);
 				
-				frame.setRGB(ELayer.get(ii).get(0), ELayer.get(ii).get(1), Colors[0]);
+				for(double alpha = 0; alpha < (2 * Math.PI); alpha += ((Math.PI / 2)/(radius))) {
+					ArrayList<Double> temparray = new ArrayList<Double>();
+					temparray.add((Math.cos(alpha) * radius));
+					temparray.add((Math.sin(alpha) * radius));
+					temparray.add(projectionIndex);
+					subELayer.add(temparray);
+				
+				}
 			}
 			
 			frames.add(calculatingFrame, frame);
