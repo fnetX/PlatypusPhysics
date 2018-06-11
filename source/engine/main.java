@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 
 public class main{	
 	
-	public static int WIDTH = 800;
-	public static int HEIGHT = 600;
+	public static int WIDTH = 200;
+	public static int HEIGHT = 200;
 	
 	public static SimulationWindow mainWindow;
 

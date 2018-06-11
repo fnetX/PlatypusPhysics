@@ -56,13 +56,14 @@ public class FrameDisplay extends SimulationObject {
 	
 	public void drawMode() {
 		this.sprite = Program.preframe;
+		main.repaint = true;
 	}
 	
 	public void FixedUpdate() {
-		if(Program.active && Program.simMode) {
-			simMode();
-		} else if(!Program.simMode) {
+//		if(Program.active && Program.simMode) {
+//			simMode();
+//		} else if(!Program.simMode) {
 			drawMode();
-		}
+//		}
 	}
 }
