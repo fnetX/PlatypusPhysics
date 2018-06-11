@@ -47,10 +47,24 @@ public class SimulationScene {
 	
 	public SimulationObject addObject(SimulationObject o, int x, int y){
 	this.objects.add(o);
+
 	o.x = x;
 	o.y = y;
 	
 	return o;	
+	}
+	
+	public SimulationObject addObject(int index, SimulationObject o, int x, int y){
+		this.objects.add(index, o);
+
+		o.x = x;
+		o.y = y;
+		
+		return o;	
+	}
+	
+	public void removeObject(int index){
+		this.objects.remove(index);		
 	}
 	
 }
