@@ -617,7 +617,6 @@ public class Program {
 		frames = new ArrayList<BufferedImage>();
 		frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
 		subELayer = new ArrayList<ArrayList<Double>>();
-		WaveLayer = new ArrayList<ArrayList<Double>>();
 		
 		for(int x = main.WIDTH - 1; x >= 0; x--) {
 			for(int y = main.HEIGHT - 1; y >= 0; y--) {
@@ -650,6 +649,23 @@ public class Program {
 									int x5 = RLayer.get(iiii).get(0);
 									int y5 = RLayer.get(iiii).get(1);
 									near = 0;
+
+									if((x4 - 1) == x5) {
+										near++;
+									}
+									if((x4 + 1) == x5) {
+										near++;
+									}
+									if((y4 - 1) == y5) {
+										near++;
+									}
+									if((y4 + 1) == y5) {
+										near++;
+									}
+									if(near >= 2) {
+//										addDistance(x4, y4, x5, y5);
+										break outerloop;
+									}
 									
 									if(x4 == x5 && y4 == y5) {
 										
@@ -658,31 +674,31 @@ public class Program {
 										
 										ii = newCoords.size();
 										break outerloop;
-									} else {
-										if((x4 - 1) == x5) {
-											near++;
-										}
-										if((x4 + 1) == x5) {
-											near++;
-										}
-										if((y4 - 1) == y5) {
-											near++;
-										}
-										if((y4 + 1) == y5) {
-											near++;
-										}
-										if(near >= 2) {
-											addDistance(x4, y4, x5, y5);
-											break outerloop;
-										}
-										
 									}
+										
+									
 								}
 									
 								for(iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ALayer.get(iiii).get(0);
 									int y5 = ALayer.get(iiii).get(1);
-									near = 0;
+									
+									if((x4 - 1) == x5) {
+										near++;
+									}
+									if((x4 + 1) == x5) {
+										near++;
+									}
+									if((y4 - 1) == y5) {
+										near++;
+									}
+									if((y4 + 1) == y5) {
+										near++;
+									}
+									if(near >= 2) {
+//										addDistance(x4, y4, x5, y5);
+										break outerloop;
+									}
 									if(x4 == x5 && y4 == y5) {
 										
 //										System.out.println("collision" + " " + x4 + " " + y4);
@@ -690,24 +706,8 @@ public class Program {
 										ii = newCoords.size();
 										break outerloop;
 										
-									} else {
-										if((x4 - 1) == x5) {
-											near++;
-										}
-										if((x4 + 1) == x5) {
-											near++;
-										}
-										if((y4 - 1) == y5) {
-											near++;
-										}
-										if((y4 + 1) == y5) {
-											near++;
-										}
-										if(near >= 2) {
-											addDistance(x4, y4, x5, y5);
-											break outerloop;
-										}
 									}
+									
 								}
 								
 								for(iiii = ELayer.size() - 1; iiii >= 0; iiii--) {
@@ -720,8 +720,9 @@ public class Program {
 //										System.out.println("collision" + " " + x4 + " " + y4);
 										break;
 									} else {
-										addDistance(x4, y4, x5, y5);
 									}
+
+									addDistance(x4, y4, x5, y5);
 								}
 							}
 							
@@ -735,59 +736,59 @@ public class Program {
 									int x5 = RLayer.get(iiii).get(0);
 									int y5 = RLayer.get(iiii).get(1);
 									near = 0;
+									
+									if((x4 - 1) == x5) {
+										near++;
+									}
+									if((x4 + 1) == x5) {
+										near++;
+									}
+									if((y4 - 1) == y5) {
+										near++;
+									}
+									if((y4 + 1) == y5) {
+										near++;
+									}
+									if(near >= 2) {
+//										addDistance(x4, y4, x5, y5);
+										break outerloop;
+									}
 									if(x4 == x5 && y4 == y5) {
 										
 //										System.out.println("collision" + " " + x4 + " " + y4);
 										
 										ii = 0;
 										break outerloop;
-									} else {
-										if((x4 - 1) == x5) {
-											near++;
-										}
-										if((x4 + 1) == x5) {
-											near++;
-										}
-										if((y4 - 1) == y5) {
-											near++;
-										}
-										if((y4 + 1) == y5) {
-											near++;
-										}
-										if(near >= 2) {
-											addDistance(x4, y4, x5, y5);
-											break outerloop;
-										}
 									}
+									
 								}
 							
 								for(iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ALayer.get(iiii).get(0);
 									int y5 = ALayer.get(iiii).get(1);
-									near = 0;
+									if((x4 - 1) == x5) {
+										near++;
+									}
+									if((x4 + 1) == x5) {
+										near++;
+									}
+									if((y4 - 1) == y5) {
+										near++;
+									}
+									if((y4 + 1) == y5) {
+										near++;
+									}
+									if(near >= 2) {
+//										addDistance(x4, y4, x5, y5);
+										break outerloop;
+									}
+
 									if(x4 == x5 && y4 == y5) {
 										
 //										System.out.println("collision" + " " + x4 + " " + y4);
 										
 										ii = 0;
 										break outerloop;
-									} else {
-										if((x4 - 1) == x5) {
-											near++;
-										}
-										if((x4 + 1) == x5) {
-											near++;
-										}
-										if((y4 - 1) == y5) {
-											near++;
-										}
-										if((y4 + 1) == y5) {
-											near++;
-										}
-										if(near >= 2) {
-											addDistance(x4, y4, x5, y5);
-											break outerloop;
-										}
 									}
 								}
 								
@@ -801,8 +802,9 @@ public class Program {
 //										System.out.println("collision" + " " + x4 + " " + y4);
 										break;
 									} else {
-										addDistance(x4, y4, x5, y5);
 									}
+
+									addDistance(x4, y4, x5, y5);
 								}
 							}
 						}
@@ -911,9 +913,32 @@ public class Program {
 	}
 	
 	public static void addDistance(int x1, int y1, int x2, int y2) {
-//		double distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-
-		preframe.setRGB(x1, y1, Color.RED.getRGB());
+//		ArrayList<Double> tempLayer = new ArrayList<Double>();
+		double distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+//		boolean added = false;
+//		for(int i = WaveLayer.size() - 1; i >= 0; i--) {
+//			if(WaveLayer.get(i).get(0) == x1 && WaveLayer.get(i).get(1) == y1) {
+//				tempLayer.addAll(WaveLayer.get(i));
+//				tempLayer.add(distance);
+//				WaveLayer.set(i, tempLayer);
+//				added = true;
+//				break;
+//			}
+//		}
+//		if(!added) {
+//			tempLayer.add((double) x1);
+//			tempLayer.add((double) y1);
+//			tempLayer.add(distance);
+//			WaveLayer.add(tempLayer);
+//		}
+		
+		
+		int color = preframe.getRGB(x1, y1);
+		int colorfactor = color / Color.BLACK.getRGB();
+		
+		Color color1 = new Color((int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)), (int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)), (int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)));
+		int color2 = color + color1.getRGB();
+		preframe.setRGB(x1, y1, color1.getRGB());
 	}
 	
 	public static boolean Collision(int x, int y, ArrayList<ArrayList<Integer>> newCoords) {
