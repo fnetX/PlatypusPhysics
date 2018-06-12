@@ -672,7 +672,8 @@ public class Program {
 											near++;
 										}
 										if(near >= 2) {
-											break;
+											addDistance(x4, y4, x5, y5);
+											break outerloop;
 										}
 										
 									}
@@ -703,6 +704,7 @@ public class Program {
 											near++;
 										}
 										if(near >= 2) {
+											addDistance(x4, y4, x5, y5);
 											break outerloop;
 										}
 									}
@@ -719,9 +721,6 @@ public class Program {
 										break;
 									} else {
 										addDistance(x4, y4, x5, y5);
-									}
-									if(near >= 2) {
-										break outerloop;
 									}
 								}
 							}
@@ -756,7 +755,8 @@ public class Program {
 											near++;
 										}
 										if(near >= 2) {
-											break;
+											addDistance(x4, y4, x5, y5);
+											break outerloop;
 										}
 									}
 								}
@@ -785,7 +785,8 @@ public class Program {
 											near++;
 										}
 										if(near >= 2) {
-											break;
+											addDistance(x4, y4, x5, y5);
+											break outerloop;
 										}
 									}
 								}
@@ -801,9 +802,6 @@ public class Program {
 										break;
 									} else {
 										addDistance(x4, y4, x5, y5);
-									}
-									if(near >= 2) {
-										break outerloop;
 									}
 								}
 							}
