@@ -21,6 +21,8 @@ public class SimulationObject {
 	
 	public Image sprite;
 	
+	public String text;
+	
 	
 	public void Update(){}
 	public void FixedUpdate(){}
@@ -42,11 +44,18 @@ public class SimulationObject {
 		this.type = PrimitiveType.Image;
 	}
 	
-	public SimulationObject(BufferedImage sprite){
-		this.sprite = sprite;
+	public SimulationObject(BufferedImage img){
+		this.sprite = img;
 		this.width = this.sprite.getWidth(null);
 		this.height = this.sprite.getHeight(null);
 		this.type = PrimitiveType.Image;
+	}
+	
+	public SimulationObject(String text, int size, Color color) {
+		this.scale = size;
+		this.text = text;
+		this.type = PrimitiveType.Text;
+		this.color = color;
 	}
 	
 	public void setPosition(float x, float y){
@@ -77,6 +86,39 @@ public class SimulationObject {
 	public void localTranslate(float f, float g){
 		translate((float)Math.cos(Math.toRadians(rotation)) * f, (float)Math.sin(Math.toRadians(rotation)) * f);
 		translate((float)Math.cos(Math.toRadians(rotation + 90)) * g, (float)Math.sin(Math.toRadians(rotation + 90)) * g);
+	}
+	
+	public void setLocalRotation(Vector2 p, float deg, float dis){
+		this.x = (int)(p.x + Math.cos(Math.toRadians(deg)) * dis);
+		this.y = (int)(p.y + Math.sin(Math.toRadians(deg)) * dis);
+	}
+	
+	public int getLocalRotation(Vector2 p){
+		float dis = (float) Math.sqrt(Math.pow(this.y - p.y, 2)+Math.pow(this.x-p.x,2));
+		
+		Vector2 local = new Vector2(this.x - p.x, this.y - p.y);
+		local = new Vector2(local.x /dis, local.y / dis);
+		
+		if(local.x > 0 && local.y > 0){
+			return (int) Math.round(Math.toDegrees(Math.asin(local.y)));
+		}
+		else if(local.x > 0 && local.y < 0){
+			return (int) Math.round(360 + Math.toDegrees(Math.asin(local.y)));
+			}
+		else if(local.x < 0 && local.y > 0){
+			return (int) Math.round(180 - Math.toDegrees(Math.asin(local.y)));	
+			}
+		else if(local.x < 0 && local.y < 0){
+			return (int) Math.round(180 - Math.toDegrees(Math.asin(local.y)));	
+			}
+		else
+			return -1;
+	}
+	
+	public void rotateAround(Vector2 p, float deg){
+		float dis = (float) Math.sqrt(Math.pow(this.y - p.y, 2)+Math.pow(this.x-p.x,2));
+		
+		this.setLocalRotation(p, this.getLocalRotation(p) + deg, dis);
 	}
 
 }

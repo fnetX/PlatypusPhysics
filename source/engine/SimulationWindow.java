@@ -34,10 +34,10 @@ public class SimulationWindow extends JFrame implements ActionListener {
 		content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
 		
 		left = new JPanel();
-		left.setPreferredSize(new Dimension(200, left.getHeight()));		
+		left.setPreferredSize(new Dimension(0, left.getHeight()));		
 		
 		right = new JPanel();
-		right.setPreferredSize(new Dimension(200, right.getHeight()));
+		right.setPreferredSize(new Dimension(0, right.getHeight()));
 
 		
 		center = new JPanel();

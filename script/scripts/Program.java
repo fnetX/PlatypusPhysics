@@ -1,12 +1,9 @@
 package scripts;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -20,8 +17,6 @@ import engine.SimulationWindow;
 import engine.main;
 import engine.Input;
 import engine.MouseButton;
-import engine.PrimitiveType;
-import engine.SimulationObject;
 
 public class Program {
 	
@@ -101,6 +96,8 @@ public class Program {
 	static boolean modeChanged = false;
 	static boolean active = false;
 	static boolean done = false;
+	
+	static double maxintensity = 0;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -625,8 +622,6 @@ public class Program {
 				}
 				System.out.println(x + " " + y);
 				ArrayList<ArrayList<Double>> temparray = new ArrayList<ArrayList<Double>>();
-
-				int iiii = 0;
 				
 				for(int i = ELayer.size() - 1; i >= 0; i--) {
 					int x1 = ELayer.get(i).get(0);
@@ -645,7 +640,7 @@ public class Program {
 								int x4 = newCoords.get(ii).get(0);
 								int y4 = newCoords.get(ii).get(1);
 															
-								for(iiii = RLayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = RLayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = RLayer.get(iiii).get(0);
 									int y5 = RLayer.get(iiii).get(1);
 									near = 0;
@@ -679,7 +674,7 @@ public class Program {
 									
 								}
 									
-								for(iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ALayer.get(iiii).get(0);
 									int y5 = ALayer.get(iiii).get(1);
 									
@@ -710,7 +705,7 @@ public class Program {
 									
 								}
 								
-								for(iiii = ELayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = ELayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ELayer.get(iiii).get(0);
 									int y5 = ELayer.get(iiii).get(1);
 									
@@ -732,7 +727,7 @@ public class Program {
 								int x4 = newCoords.get(ii).get(0);
 								int y4 = newCoords.get(ii).get(1);
 								
-								for(iiii = RLayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = RLayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = RLayer.get(iiii).get(0);
 									int y5 = RLayer.get(iiii).get(1);
 									near = 0;
@@ -763,7 +758,7 @@ public class Program {
 									
 								}
 							
-								for(iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = ALayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ALayer.get(iiii).get(0);
 									int y5 = ALayer.get(iiii).get(1);
 									if((x4 - 1) == x5) {
@@ -792,7 +787,7 @@ public class Program {
 									}
 								}
 								
-								for(iiii = ELayer.size() - 1; iiii >= 0; iiii--) {
+								for(int iiii = ELayer.size() - 1; iiii >= 0; iiii--) {
 									int x5 = ELayer.get(iiii).get(0);
 									int y5 = ELayer.get(iiii).get(1);
 									
@@ -810,6 +805,8 @@ public class Program {
 						}
 					}
 				}
+
+				drawWaveLayer();
 			}
 		}
 		
@@ -913,47 +910,54 @@ public class Program {
 	}
 	
 	public static void addDistance(int x1, int y1, int x2, int y2) {
-//		ArrayList<Double> tempLayer = new ArrayList<Double>();
 		double distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-//		boolean added = false;
-//		for(int i = WaveLayer.size() - 1; i >= 0; i--) {
-//			if(WaveLayer.get(i).get(0) == x1 && WaveLayer.get(i).get(1) == y1) {
-//				tempLayer.addAll(WaveLayer.get(i));
-//				tempLayer.add(distance);
-//				WaveLayer.set(i, tempLayer);
-//				added = true;
-//				break;
-//			}
-//		}
-//		if(!added) {
-//			tempLayer.add((double) x1);
-//			tempLayer.add((double) y1);
-//			tempLayer.add(distance);
-//			WaveLayer.add(tempLayer);
-//		}
-		
-		
-		int color = preframe.getRGB(x1, y1);
-		int colorfactor = color / Color.BLACK.getRGB();
-		
-		Color color1 = new Color((int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)), (int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)), (int) Math.round(255 * ((1 + Math.sin(distance / 4)) / 2)));
-		int color2 = color + color1.getRGB();
-		preframe.setRGB(x1, y1, color1.getRGB());
-	}
-	
-	public static boolean Collision(int x, int y, ArrayList<ArrayList<Integer>> newCoords) {
-		boolean collision = false;
-		for(int i = 0; i < newCoords.size(); i++) {
-			int x1 = newCoords.get(i).get(0);
-			int y1 = newCoords.get(i).get(1);
-			if(x == x1 && y == y1) {
-				collision = true;
-				break;
+		boolean added = false;
+		outerloop:
+		for(int i = WaveLayer.size() - 1; i >= 0; i--) {
+			ArrayList<Double> tempLayer = new ArrayList<Double>();
+			if((int) Math.round(WaveLayer.get(i).get(0)) == (int) x1 && (int) Math.round(WaveLayer.get(i).get(1)) == (int) y1) {
+				tempLayer.addAll(WaveLayer.get(i));
+				for(int ii = tempLayer.size() - 1; ii >= 2; ii--) {
+					if(tempLayer.get(ii) == distance) {
+						added = true;
+						break outerloop;
+					} else if(!added && ii == 2) {
+						tempLayer.add(distance);
+						WaveLayer.set(i, tempLayer);
+						added = true;
+						break outerloop;
+					}
+				}
 			}
 		}
-		return collision;
+		if(!added) {
+			ArrayList<Double> tempLayer = new ArrayList<Double>();
+			tempLayer.add((double) x1);
+			tempLayer.add((double) y1);
+			tempLayer.add(distance);
+			WaveLayer.add(tempLayer);
+		}
 	}
 	
+	public static void drawWaveLayer() {
+		for(int i = WaveLayer.size() - 1; i >= 0; i--) {
+			ArrayList<Double> tempLayer = new ArrayList<Double>();
+			tempLayer.addAll(WaveLayer.get(i));
+			double intensity = 0;
+			for(int ii = tempLayer.size() - 1; ii >= 2; ii--) {
+				intensity += (Math.sin(tempLayer.get(ii) / 4));
+			}
+			if(maxintensity < Math.abs(intensity)) {
+				maxintensity = Math.abs(intensity);
+			}
+			int intensity1 = (int) Math.round((255 / 2) + (255 / 2 * intensity / maxintensity));
+//			System.out.println(intensity1);
+			
+			Color color1 = new Color(intensity1, intensity1, intensity1);
+
+			preframe.setRGB((int) Math.round(tempLayer.get(0)), (int) Math.round(tempLayer.get(1)), color1.getRGB());
+		}
+	}
 	
 	public static void FixedUpdate() {
 		

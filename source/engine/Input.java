@@ -1,6 +1,5 @@
 package engine;
 
-import java.awt.Color;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -15,6 +14,7 @@ public class Input implements KeyListener, MouseListener {
 	public static Input instance = new Input();
 	public static List<Character> pressedKeys = new ArrayList<Character>();
 	public static List<Integer> pressedMouseButtons = new ArrayList<Integer>();
+	
 
 	public static boolean getKey(char c){
 		return pressedKeys.contains(c);

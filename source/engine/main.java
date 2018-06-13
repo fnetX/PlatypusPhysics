@@ -1,7 +1,11 @@
 package engine;
 
+import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import scripts.Program;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 
@@ -13,14 +17,14 @@ public class main{
 	
 	public static SimulationWindow mainWindow;
 
-	public static float fixedTick = 100f;
+	public static float fixedTick = 30f;
 	public static Class coreClass;
 	static String coreClassLocation = "scripts.Program";
+	
 	public static boolean update = true;
 	public static boolean repaint = true;
 	
 	
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args){
 		//Set Core-Class
 		try {
@@ -48,7 +52,7 @@ public class main{
 			int delay = (int) (1000 / fixedTick);
 			ActionListener fixedUpdate = new ActionListener() {
 			      public void actionPerformed(ActionEvent evt) {
-			    	  mainWindow.graphics.requestFocus();
+			    	 // mainWindow.graphics.requestFocus();
 			    	  for(int i = 0; i < SimulationScene.activeScene.objects.size(); i++){
 						SimulationScene.activeScene.objects.get(i).FixedUpdate();
 			    	  }
@@ -58,6 +62,10 @@ public class main{
 							| NoSuchMethodException | SecurityException e) {
 						e.printStackTrace();
 			    	  }	
+			  		  SimulationWindow.Update();
+			  		  if(repaint) {
+			  		  	mainWindow.graphics.repaint();
+			  		  }
 			      }
 			  };
 			  new Timer(delay, fixedUpdate).start();
@@ -74,10 +82,14 @@ public class main{
 								| NoSuchMethodException | SecurityException e) {
 						e.printStackTrace();
 			    	  }
-			    if(repaint) {
-			    	mainWindow.graphics.repaint();
-			    	repaint = false;
-			  	}
+			    	  
+//			    	  if(Input.getMousePosition().x != -1 && Input.getMousePosition().y != -1){
+//			    		  mainWindow.graphics.requestFocus();
+//			    	  }
+			    	  if(Input.getMouseButton(MouseButton.LEFT)){
+			    		  if(!mainWindow.graphics.hasFocus())
+			    		  mainWindow.graphics.requestFocus();
+			    	  }
 			  }
 			  
 	}

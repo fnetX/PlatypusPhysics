@@ -1,6 +1,7 @@
 package engine;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -49,6 +50,15 @@ public class GraphicsPanel extends JPanel {
 	case Oval:
 		g.setColor(o.color);
 		g.fillOval(0, 0, o.width, o.height);
+		break;
+	case Text:
+		g.setColor(o.color);
+//		g.setFont(new Font(Font.SERIF,Font.PLAIN,(int)o.scale));
+		g.setFont(g.getFont().deriveFont(o.scale));
+		g.setTransform(identity);
+		g.rotate(Math.toRadians(o.rotation), o.x,o.y);
+		g.drawString(o.text, o.x, o.y);
+		break;
 	}
 
 	g.setTransform(identity);	
