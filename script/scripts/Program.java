@@ -614,6 +614,7 @@ public class Program {
 		frames = new ArrayList<BufferedImage>();
 		frame = new BufferedImage(main.WIDTH, main.HEIGHT, BufferedImage.TYPE_INT_RGB);
 		subELayer = new ArrayList<ArrayList<Double>>();
+		int counter = 0;
 		
 		for(int x = main.WIDTH - 1; x >= 0; x--) {
 			for(int y = main.HEIGHT - 1; y >= 0; y--) {
@@ -805,8 +806,11 @@ public class Program {
 						}
 					}
 				}
-
-				drawWaveLayer();
+				counter++;
+				if(counter > 200) {
+					drawWaveLayer();
+					counter = 0;
+				}
 			}
 		}
 		
